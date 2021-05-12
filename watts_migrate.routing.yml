@@ -1,0 +1,6 @@
+testpage:
+  path: /testpage
+  defaults:
+    _controller: Drupal\watts_migrate\Controller\WattsController::query
+  requirements:
+    _permission: 'access content'

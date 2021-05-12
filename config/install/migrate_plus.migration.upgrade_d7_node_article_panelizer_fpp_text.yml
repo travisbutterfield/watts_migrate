@@ -1,0 +1,44 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - watts_migrate
+id: upgrade_d7_node_article_panelizer_fpp_text
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 7'
+  - Content
+migration_group: migrate_drupal_7
+label: 'Panelizer Nodes FPP Text (Article)'
+source:
+  plugin: watts_panelizer_node
+  node_type: article
+process:
+  nid:
+    -
+      plugin: get
+      source: nid
+  title:
+    -
+      plugin: get
+      source: title
+  body/value: body_value
+  body/summary: body_summary
+  body/format: body_format
+  layout_builder__layout:
+    - plugin: skip_on_empty
+      method: process
+      source: panes
+    - plugin: single_value
+    - plugin: watts_text_panes_to_lb_section
+    - plugin: multiple_values
+destination:
+  plugin: 'entity:node'
+  translations: true
+  default_bundle: article
+migration_dependencies:
+  required:
+    - upgrade_d7_node_complete_article

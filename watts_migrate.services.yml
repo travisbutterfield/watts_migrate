@@ -1,0 +1,7 @@
+services:
+  watts_migrate.query_service:
+    class: Drupal\watts_migrate\QueryService
+  watts_migrate.d7_database:
+      class: Drupal\Core\Database\Connection
+      factory: Drupal\Core\Database\Database::getConnection
+      arguments: [ 'default', 'migrate' ]
