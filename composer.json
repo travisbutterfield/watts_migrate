@@ -1,0 +1,16 @@
+{
+  "name": "travisbutterfield/watts_migrate",
+  "description": "A Drupal 8/9 custom module for migrating ASU Watts College sites from D7 to D9.",
+  "type": "drupal-custom-module",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Travis Butterfield",
+      "email": "tbutterf@asu.edu"
+    }
+  ],
+  "require": {
+    "php": ">=7.3",
+    "drupal/core": "^8.8.0 || ^9.0"
+  }
+}
