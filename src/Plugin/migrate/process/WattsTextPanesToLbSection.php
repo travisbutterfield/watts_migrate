@@ -162,7 +162,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $section->appendComponent($component);
         }
       }
-      elseif ($paneconfig['type'] === 'menu_tree') {
+      elseif ($paneconfig['type'] === 'menu_tree' || $paneconfig['type'] === 'node_title') {
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
         $section->appendComponent($component);
       }
@@ -293,7 +293,6 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           unset($exists);
         }
         break;
-
       case 'menu_tree':
         $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
         $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
@@ -305,6 +304,33 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           'expand_all_items' => $paneconfig['origconfig']['expanded'],
           'context_mapping' => [],
         ]);
+        break;
+      case 'node_title':
+        if ($paneconfig['subtype'] === 'node_title') {
+          $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
+          // Returns false if the field doesn't exist.
+          $exists = !empty($node->title);
+          if ($exists) {
+            $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+              'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':title',
+              'label' => "Title",
+              'provider' => 'layout_builder',
+              'label_display' => 0,
+              'formatter' => [
+                'label' => 'hidden',
+                'type' => 'string',
+                'settings' => [
+                  "link_to_entity" => 0
+                ],
+                'third_party_settings' => []
+              ],
+              'context_mapping' => [
+                'entity' => 'layout_builder.entity',
+                'view_mode' => 'view_mode',
+              ],
+            ]);
+          }
+        }
         break;
     }
 

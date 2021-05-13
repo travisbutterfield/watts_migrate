@@ -43,7 +43,7 @@ class QueryService {
 
     $qd9 = $connect->select('node__layout_builder__layout', 'nlbl');
 
-    $qd9->condition('nlbl.entity_id', 25)
+    $qd9->condition('nlbl.entity_id', 3373)
       ->fields('nlbl', ['layout_builder__layout_section']);
     $myresult = $qd9->execute()->fetchField();
     $print = unserialize($myresult);
@@ -60,7 +60,7 @@ class QueryService {
       ->fields('pd', ['layout'])
       ->fields('fdb', ['body_value', 'body_format', 'body_summary']);
     // Test one node.
-    $query->condition('n.nid', 2950);
+    $query->condition('n.nid', 3373);
     $results = $query->execute()->fetchAll();
 
     dump($results);
