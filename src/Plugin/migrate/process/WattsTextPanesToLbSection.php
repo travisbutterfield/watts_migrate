@@ -162,7 +162,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $section->appendComponent($component);
         }
       }
-      elseif ($paneconfig['type'] === 'menu_tree' || $paneconfig['type'] === 'node_title') {
+      elseif ($paneconfig['type'] === 'menu_tree' /*|| $paneconfig['type'] === 'node_title')*/ {
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
         $section->appendComponent($component);
       }
@@ -305,7 +305,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           'context_mapping' => [],
         ]);
         break;
-      case 'node_title':
+      /*case 'node_title':
         if ($paneconfig['subtype'] === 'node_title') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
@@ -331,7 +331,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
             ]);
           }
         }
-        break;
+        break;*/
     }
 
     if (isset($component)) {
