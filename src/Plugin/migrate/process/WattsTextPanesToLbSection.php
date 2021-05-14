@@ -220,7 +220,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
         if ($paneconfig['field'] === 'body' || $paneconfig['subtype'] === 'node_body') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
-          $exists = !empty($node->body);
+          $exists = !empty($node->get('body')->value);
           if ($exists) {
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
               'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':body',
@@ -242,7 +242,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
         if ($paneconfig['field'] === 'field_featured_image') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
-          $exists = !empty($node->field_featured_image);
+          $exists = !empty($node->get('field_featured_image')->value);
           if ($exists) {
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
               'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':' . 'field_featured_image',
@@ -269,7 +269,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $node = $this->entityTypeManager->getStorage('node')
             ->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
-          $exists = !empty($node->field_featured_categories);
+          $exists = !empty($node->get('field_featured_categories')->value);
           if ($exists) {
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
               'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':' . 'field_featured_categories',
@@ -309,7 +309,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
         if ($paneconfig['subtype'] === 'node_title') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
-          $exists = !empty($node->title);
+          $exists = !empty($node->get('title')->value);
           if ($exists) {
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
               'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':title',
