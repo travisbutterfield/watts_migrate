@@ -162,7 +162,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $section->appendComponent($component);
         }
       }
-      elseif ($paneconfig['type'] === 'menu_tree' /*|| $paneconfig['type'] === 'node_title')*/ {
+      elseif ($paneconfig['type'] === 'menu_tree' /*|| $paneconfig['type'] === 'node_title'*/) {
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
         $section->appendComponent($component);
       }
