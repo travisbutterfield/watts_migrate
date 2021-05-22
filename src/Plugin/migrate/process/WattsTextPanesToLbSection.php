@@ -293,19 +293,19 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           unset($exists);
         }
         break;
-      case 'menu_tree':
-        $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
-        $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
-          'id' => 'system_menu_block:' . $subtype,
-          'provider' => 'system',
-          'label_display' => 'visible',
-          'level' => $paneconfig['origconfig']['level'],
-          'depth' => $paneconfig['origconfig']['depth'],
-          'expand_all_items' => $paneconfig['origconfig']['expanded'],
-          'context_mapping' => [],
-        ]);
-        break;
-      /*case 'node_title':
+        case 'menu_tree':
+            $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
+            $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+                'id' => 'system_menu_block:' . $subtype,
+                'provider' => 'system',
+                'label_display' => 'visible',
+                'level' => $paneconfig['origconfig']['follow'] == 1 ? $paneconfig['origconfig']['level'] + 1 : $paneconfig['origconfig']['level'],
+                'depth' => $paneconfig['origconfig']['depth'],
+                'expand_all_items' => $paneconfig['origconfig']['expanded'],
+                'context_mapping' => [],
+            ]);
+            break;
+      case 'node_title':
         if ($paneconfig['subtype'] === 'node_title') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
@@ -331,7 +331,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
             ]);
           }
         }
-        break;*/
+        break;
     }
 
     if (isset($component)) {
