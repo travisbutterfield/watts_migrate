@@ -197,7 +197,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
               'reusable' => 0,
               'info' => $paneconfig['titletest'],
               'type' => $paneconfig['bundle'],
-              'field_basic_text_text' => [
+              'field_formatted_text' => [
                 // These values come from the configuration of the panel pane.
                 'value' => $paneconfig['text'],
                 'format' => $paneconfig['textformat'],
@@ -206,7 +206,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
-            'id' => 'inline_block:text',
+            'id' => 'inline_block:text_content',
             'label' => $paneconfig['titletest'],
             'label_display' => isset($paneconfig['title']),
             'block_serialized' => serialize($block),
