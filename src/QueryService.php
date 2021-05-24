@@ -3,6 +3,7 @@
 namespace Drupal\watts_migrate;
 
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityStorageException;
 
 /**
  * QueryService is used to test queries on the database.
@@ -29,9 +30,10 @@ class QueryService {
     ->setOverridable()
     ->save();
     $success[] = $key;
-    } catch (Exception $e) {
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
-    continue;
+    }
+    catch (EntityStorageException $e) {
+      echo 'Caught exception: ',  $e->getMessage(), "\n";
+      continue;
     }
     }
     $message = "Layout Builder was enabled on the following: %s";
@@ -43,7 +45,7 @@ class QueryService {
 
     $qd9 = $connect->select('node__layout_builder__layout', 'nlbl');
 
-    $qd9->condition('nlbl.entity_id', 3373)
+    $qd9->condition('nlbl.entity_id', 25)
       ->fields('nlbl', ['layout_builder__layout_section']);
     $myresult = $qd9->execute()->fetchField();
     $print = unserialize($myresult);

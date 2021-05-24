@@ -3,6 +3,7 @@
 namespace Drupal\watts_migrate\Plugin\migrate\process;
 
 use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\layout_builder\Section;
@@ -115,6 +116,25 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
     $rowconfig['value'] = $row->getSourceProperty('panes');
     $rowconfig['nodetype'] = $row->getSourceProperty('type');
 
+    $lbload = \Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay::load(
+          "node.{$rowconfig['nodetype']}.default");
+    $lbtest = $lbload->isLayoutBuilderEnabled();
+    if (!$lbtest) {
+       try {
+         $lbload->enableLayoutBuilder()
+             ->setOverridable()
+             ->save();
+         $format = 'Notice: Layout Builder has been enabled on the %s content type. Now continuing with migration...';
+         $print = sprintf($format, $rowconfig['nodetype']);
+         \Drupal::logger('watts_migrate')->notice($print);
+       }
+       catch (EntityStorageException $e) {
+         $format = 'An error has occurred: Layout Builder has not been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
+         $print = sprintf($format, $rowconfig['nodetype']);
+         \Drupal::logger('watts_migrate')->error($print);
+         exit;
+       }
+    }
     // Create blocks from each pane and wrap them in
     // SectionComponents to be assigned to the overall Section.
     $section = new Section($layout);
@@ -154,7 +174,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           continue;
         }
       }
-      elseif ($paneconfig['type'] === 'entity_field') {
+      elseif ($paneconfig['type'] === 'entity_field' || $paneconfig['type'] === 'node_body') {
         [$paneconfig['entity'], $paneconfig['field']] = explode(':',
           $paneconfig['subtype'], 2);
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
@@ -162,14 +182,13 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $section->appendComponent($component);
         }
       }
-      elseif ($paneconfig['type'] === 'menu_tree' /*|| $paneconfig['type'] === 'node_title'*/) {
+      elseif ($paneconfig['type'] === 'menu_tree' || $paneconfig['type'] === 'node_title') {
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
         $section->appendComponent($component);
       }
       $i++;
-      unset($paneconfig);
+
     }
-    unset($rowconfig);
     return $section;
   }
 
@@ -196,7 +215,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
             ->create([
               'reusable' => 0,
               'info' => $paneconfig['titletest'],
-              'type' => $paneconfig['bundle'],
+              'type' => $paneconfig['bundle'] === 'text' ? 'text_content' : $paneconfig['bundle'],
               'field_formatted_text' => [
                 // These values come from the configuration of the panel pane.
                 'value' => $paneconfig['text'],
@@ -208,7 +227,9 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
             'id' => 'inline_block:text_content',
             'label' => $paneconfig['titletest'],
+            'provider' => 'layout_builder',
             'label_display' => isset($paneconfig['title']),
+            'view_mode' => 'full',
             'block_serialized' => serialize($block),
             'context_mapping' => [],
           ]);
@@ -299,7 +320,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
                 'id' => 'system_menu_block:' . $subtype,
                 'provider' => 'system',
                 'label_display' => 'visible',
-                'level' => $paneconfig['origconfig']['follow'] == 1 ? $paneconfig['origconfig']['level'] + 1 : $paneconfig['origconfig']['level'],
+                'level' => $paneconfig['origconfig']['follow'] == 'active' ? $paneconfig['origconfig']['level'] + 1 : $paneconfig['origconfig']['level'],
                 'depth' => $paneconfig['origconfig']['depth'],
                 'expand_all_items' => $paneconfig['origconfig']['expanded'],
                 'context_mapping' => [],
