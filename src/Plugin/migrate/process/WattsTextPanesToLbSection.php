@@ -129,7 +129,7 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
          \Drupal::logger('watts_migrate')->notice($print);
        }
        catch (EntityStorageException $e) {
-         $format = 'An error has occurred: Layout Builder has not been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
+         $format = 'An error has occurred: Layout Builder has NOT been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
          $print = sprintf($format, $rowconfig['nodetype']);
          \Drupal::logger('watts_migrate')->error($print);
          exit;
@@ -316,11 +316,13 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
         break;
         case 'menu_tree':
             $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
+            $menutitle = $paneconfig['origconfig']['override_title'] == 1 ? $paneconfig['origconfig']['override_title_text'] : null;
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
                 'id' => 'system_menu_block:' . $subtype,
                 'provider' => 'system',
-                'label_display' => 'visible',
-                'level' => $paneconfig['origconfig']['follow'] == 'active' ? $paneconfig['origconfig']['level'] + 1 : $paneconfig['origconfig']['level'],
+                'label' => $menutitle,
+                'label_display' => $paneconfig['origconfig']['override_title'] == 1 ?: 0,
+                'level' => $paneconfig['origconfig']['follow'] == 'active' ? 2 : 1,
                 'depth' => $paneconfig['origconfig']['depth'],
                 'expand_all_items' => $paneconfig['origconfig']['expanded'],
                 'context_mapping' => [],
