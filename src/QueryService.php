@@ -62,7 +62,7 @@ class QueryService {
       ->fields('pd', ['layout'])
       ->fields('fdb', ['body_value', 'body_format', 'body_summary']);
     // Test one node.
-    $query->condition('n.nid', 3373);
+    $query->condition('n.nid', 37);
     $results = $query->execute()->fetchAll();
 
     dump($results);
@@ -98,6 +98,7 @@ class QueryService {
           // and return the correct bundle.
           switch ($subtype) {
             case "fpid":
+            case "current":
               $fpid = $id;
               $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
                 ->fields('fppr', ['vid'])
@@ -110,7 +111,7 @@ class QueryService {
                 ->execute()
                 ->fetchCol();
               $bundle = array_pop($getbundle);
-              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid";
+              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
               break;
 
             case "vid":
@@ -126,7 +127,7 @@ class QueryService {
                 ->execute()
                 ->fetchCol();
               $bundle = array_pop($getbundle);
-              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid";
+              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
               break;
 
             case "uuid":
@@ -148,7 +149,7 @@ class QueryService {
                 ->execute()
                 ->fetchCol();
               $bundle = array_pop($getbundle);
-              echo "bundle = $bundle <br>uuid = $uuid <br>fpid = $fpid <br>vid = $vid";
+              echo "bundle = $bundle <br>uuid = $uuid <br>fpid = $fpid <br>vid = $vid<br>";
               break;
 
             case "vuuid":
@@ -170,23 +171,7 @@ class QueryService {
                 ->execute()
                 ->fetchCol();
               $bundle = array_pop($getbundle);
-              echo "bundle = $bundle <br>vuuid = $vuuid <br>fpid = $fpid <br>vid = $vid";
-              break;
-
-            case "current":
-              $fpid = $id;
-              $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
-                ->fields('fppr', ['vid'])
-                ->condition('fppr.fpid', $fpid)
-                ->execute()
-                ->fetchCol();
-              $vid = array_pop($getvid);
-              $getbundle = $con->select('fieldable_panels_panes', 'fpp')->fields('fpp')
-                ->condition('fpp.fpid', $fpid)
-                ->execute()
-                ->fetchCol();
-              $bundle = array_pop($getbundle);
-              echo "bundle = $bundle<br>fpid = $fpid<br>vid = $vid";
+              echo "bundle = $bundle <br>vuuid = $vuuid <br>fpid = $fpid <br>vid = $vid<br>";
               break;
 
             default:
@@ -208,6 +193,30 @@ class QueryService {
               )
               ->condition('fdfbtt.entity_id', $fpid);
             $result = $textquery->execute()->fetchAll();
+            dump($result);
+          }
+          if ($bundle === "hero") {
+            $heroquery = $con->select('fieldable_panels_panes', 'fpp');
+            $heroquery->leftJoin('field_data_field_webspark_hero_bgimg', 'hbi', 'hbi.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_blurb', 'hbl', 'hbl.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_gradbtn', 'hgb', 'hgb.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_height', 'hht', 'hht.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_primarybtn', 'hpb', 'hpb.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_ugradbtn', 'hub', 'hub.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
+            $heroquery->fields('hbi', ['field_webspark_hero_bgimg_fid'])
+              ->fields('hbl', ['field_webspark_hero_blurb_value'])
+              ->fields('hgb', ['field_webspark_hero_gradbtn_url', 'field_webspark_hero_gradbtn_title'])
+              ->fields('hht', ['field_webspark_hero_height_value'])
+              ->fields('hpb', ['field_webspark_hero_primarybtn_url', 'field_webspark_hero_primarybtn_title'])
+              ->fields('hub', ['field_webspark_hero_ugradbtn_url', 'field_webspark_hero_ugradbtn_title'])
+              ->fields('jhbi', ['field_webspark_jumbohero_bgimg_fid'])
+              ->fields('jhbl', ['field_webspark_jumbohero_blurb_value', 'field_webspark_jumbohero_blurb_format'])
+              ->fields('jhp', ['field_webspark_jumbo_position_value'])
+              ->condition('hbi.entity_id', $fpid);
+            $result = $heroquery->execute()->fetchAll();
             dump($result);
           }
         }
