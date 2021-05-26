@@ -234,6 +234,30 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
             'context_mapping' => [],
           ]);
         }
+        if ($paneconfig['bundle'] === 'hero') {
+          $block = $this->entityTypeManager->getStorage('block_content')
+            ->create([
+              'reusable' => 0,
+              'info' => $paneconfig['titletest'],
+              'type' => $paneconfig['bundle'] === 'text' ? 'text_content' : $paneconfig['bundle'],
+              'field_formatted_text' => [
+                // These values come from the configuration of the panel pane.
+                'value' => $paneconfig['text'],
+                'format' => $paneconfig['textformat'],
+              ],
+            ]);
+          // Create Block embedded in a Section Component. Passing a serialized
+          // Block entity is the key to making this work.
+          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+            'id' => 'inline_block:text_content',
+            'label' => $paneconfig['titletest'],
+            'provider' => 'layout_builder',
+            'label_display' => isset($paneconfig['title']),
+            'view_mode' => 'full',
+            'block_serialized' => serialize($block),
+            'context_mapping' => [],
+          ]);
+        }
         break;
 
       case  'node_body':

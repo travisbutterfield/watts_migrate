@@ -47,14 +47,17 @@ trait GetFppDataTrait {
       case "current":
         $fpid = $id;
         $row->setSourceProperty('panes/' . $i . '/fpid', $fpid);
-        $getvid = $this->d7Connection->select('fieldable_panels_panes_revision', 'fppr')
+      $getvid = $this->d7Connection
+          ->select('fieldable_panels_panes_revision', 'fppr')
           ->fields('fppr', ['vid'])
           ->condition('fppr.fpid', $fpid)
           ->execute()
           ->fetchCol();
         $vid = array_pop($getvid);
         $row->setSourceProperty('panes/' . $i . '/vid', $vid);
-        $getbundle = $this->d7Connection->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
+        $getbundle = $this->d7Connection
+          ->select('fieldable_panels_panes', 'fpp')
+          ->fields('fpp', ['bundle'])
           ->condition('fpp.fpid', $fpid)
           ->execute()
           ->fetchCol();
@@ -65,14 +68,17 @@ trait GetFppDataTrait {
       case "vid":
         $vid = $id;
         $row->setSourceProperty('panes/' . $i . '/vid', $vid);
-        $getfpid = $this->d7Connection->select('fieldable_panels_panes_revision', 'fppr')
+        $getfpid = $this->d7Connection
+          ->select('fieldable_panels_panes_revision', 'fppr')
           ->fields('fppr', ['fpid'])
           ->condition('fppr.vid', $vid)
           ->execute()
           ->fetchCol();
         $fpid = array_pop($getfpid);
         $row->setSourceProperty('panes/' . $i . '/fpid', $fpid);
-        $getbundle = $this->d7Connection->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
+        $getbundle = $this->d7Connection
+          ->select('fieldable_panels_panes', 'fpp')
+          ->fields('fpp', ['bundle'])
           ->condition('fpp.fpid', $fpid)
           ->execute()
           ->fetchCol();
@@ -83,21 +89,25 @@ trait GetFppDataTrait {
       case "uuid":
         $uuid = $id;
         $row->setSourceProperty('panes/' . $i . '/uuid', $uuid);
-        $getfpid = $this->d7Connection->select('fieldable_panels_panes', 'fpp')
+        $getfpid = $this->d7Connection
+          ->select('fieldable_panels_panes', 'fpp')
           ->fields('fpp', ['fpid'])
           ->condition('fpp.uuid', $uuid)
           ->execute()
           ->fetchCol();
         $fpid = array_pop($getfpid);
         $row->setSourceProperty('panes/' . $i . '/fpid', $fpid);
-        $getvid = $this->d7Connection->select('fieldable_panels_panes_revision', 'fppr')
+        $getvid = $this->d7Connection
+          ->select('fieldable_panels_panes_revision', 'fppr')
           ->fields('fppr', ['vid'])
           ->condition('fppr.vid', $fpid)
           ->execute()
           ->fetchCol();
         $vid = array_pop($getvid);
         $row->setSourceProperty('panes/' . $i . '/vid', $vid);
-        $getbundle = $this->d7Connection->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
+        $getbundle = $this->d7Connection
+          ->select('fieldable_panels_panes', 'fpp')
+          ->fields('fpp', ['bundle'])
           ->condition('fpp.fpid', $fpid)
           ->execute()
           ->fetchCol();
@@ -108,21 +118,25 @@ trait GetFppDataTrait {
       case "vuuid":
         $vuuid = $id;
         $row->setSourceProperty('panes/' . $i . '/vuuid', $vuuid);
-        $getvid = $this->d7Connection->select('fieldable_panels_panes_revision', 'fppr')
+        $getvid = $this->d7Connection
+          ->select('fieldable_panels_panes_revision', 'fppr')
           ->fields('fppr', ['vid'])
           ->condition('fppr.vuuid', $vuuid)
           ->execute()
           ->fetchCol();
         $vid = array_pop($getvid);
         $row->setSourceProperty('panes/' . $i . '/vid', $vid);
-        $getfpid = $this->d7Connection->select('fieldable_panels_panes_revision', 'fppr')
+        $getfpid = $this->d7Connection
+          ->select('fieldable_panels_panes_revision', 'fppr')
           ->fields('fppr', ['fpid'])
           ->condition('fppr.vuuid', $vuuid)
           ->execute()
           ->fetchCol();
         $fpid = array_pop($getfpid);
         $row->setSourceProperty('panes/' . $i . '/fpid', $fpid);
-        $getbundle = $this->d7Connection->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
+        $getbundle = $this->d7Connection
+          ->select('fieldable_panels_panes', 'fpp')
+          ->fields('fpp', ['bundle'])
           ->condition('fpp.fpid', $fpid)
           ->execute()
           ->fetchCol();
@@ -134,12 +148,14 @@ trait GetFppDataTrait {
         $fpid = NULL;
         $vid = NULL;
         $bundle = NULL;
-        $this->logger->notice('An unknown fieldable_panels_pane subtype was referenced: %subtype', ['%subtype' => $subtype]);
+        $this->logger->notice('An unknown fieldable_panels_pane subtype was 
+        referenced: %subtype', ['%subtype' => $subtype]);
     }
 
     // Use the retrieved bundle to access the contents of the 'text' fpps.
     if ($bundle === "text") {
-      $textquery = $this->d7Connection->select('field_data_field_basic_text_text', 'fdfbtt');
+      $textquery = $this->d7Connection
+      ->select('field_data_field_basic_text_text', 'fdfbtt');
       // Join with fpp to get the 'title' field of the pane.
       $textquery->innerJoin(
         'fieldable_panels_panes',
@@ -169,7 +185,8 @@ trait GetFppDataTrait {
       $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
-      $heroquery->fields('hbi', ['field_webspark_hero_bgimg_fid'])
+      $heroquery->fields('fpp', ['title', 'link', 'path', 'category'])
+        ->fields('hbi', ['field_webspark_hero_bgimg_fid'])
         ->fields('hbl', ['field_webspark_hero_blurb_value'])
         ->fields('hgb', ['field_webspark_hero_gradbtn_url', 'field_webspark_hero_gradbtn_title'])
         ->fields('hht', ['field_webspark_hero_height_value'])
@@ -182,7 +199,30 @@ trait GetFppDataTrait {
       $result = $heroquery->execute()->fetchAll();
 
       $row->setSourceProperty('panes/' . $i . '/hero_fpp', $result);
+    }
+    if ($bundle === "asu_spotlight") {
+      $spotquery = $this->d7Connection->select('fieldable_panels_panes', 'fpp');
+      $spotquery->leftJoin('field_data_field_asu_spotlight_items', 'asi', 'asi.entity_id = fpp.fpid');
+      $spotquery->fields('fpp', ['title', 'link', 'path', 'category'])
+        ->fields('asi',
+          [ 'field_asu_spotlight_items_title',
+            'field_asu_spotlight_items_description',
+            'field_asu_spotlight_items_fid',
+            'field_asu_spotlight_items_link',
+            'field_asu_spotlight_items_alt',
+            'field_asu_spotlight_items_actionlink',
+            'field_asu_spotlight_items_actiontitle',
+            'field_asu_spotlight_items_actionlink2',
+            'field_asu_spotlight_items_actiontitle2',
+            'field_asu_spotlight_items_position',
+            'field_asu_spotlight_items_overlaytextwidth',
+            'field_asu_spotlight_items_color',
+          ])
+        ->condition('asi.entity_id', $fpid)
+        ->condition('asi.deleted', 0, '=');
+      $result = $spotquery->execute()->fetchAll();
 
+      $row->setSourceProperty('panes/' . $i . '/asu_spotlight_fpp', $result);
     }
   }
 
