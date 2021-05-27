@@ -36,7 +36,7 @@ trait GetFppDataTrait {
   public function getFppData(array $pane, Row $row, int $i) {
     $fpptype = $pane['subtype'];
 
-    list($subtype, $id) = explode(':', $fpptype, 2);
+    [$subtype, $id] = explode(':', $fpptype, 2);
 
     // There are five different subtypes that are used to handle revision
     // locking in the database. These are: fpid, vid, uuid, vuuid, and current.
@@ -162,7 +162,7 @@ trait GetFppDataTrait {
         'fpp',
         'fdfbtt.entity_id = fpp.fpid'
       );
-      $textquery->fields('fpp', ['title'])
+      $textquery->fields('fpp', ['title', 'link', 'path', 'reusable', 'admin_title'])
         ->fields(
           'fdfbtt',
           ['field_basic_text_text_value',
@@ -185,7 +185,7 @@ trait GetFppDataTrait {
       $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
-      $heroquery->fields('fpp', ['title', 'link', 'path', 'category'])
+      $heroquery->fields('fpp', ['title', 'link', 'path', 'reusable', 'admin_title'])
         ->fields('hbi', ['field_webspark_hero_bgimg_fid'])
         ->fields('hbl', ['field_webspark_hero_blurb_value'])
         ->fields('hgb', ['field_webspark_hero_gradbtn_url', 'field_webspark_hero_gradbtn_title'])
@@ -203,7 +203,7 @@ trait GetFppDataTrait {
     if ($bundle === "asu_spotlight") {
       $spotquery = $this->d7Connection->select('fieldable_panels_panes', 'fpp');
       $spotquery->leftJoin('field_data_field_asu_spotlight_items', 'asi', 'asi.entity_id = fpp.fpid');
-      $spotquery->fields('fpp', ['title', 'link', 'path', 'category'])
+      $spotquery->fields('fpp', ['title', 'link', 'path', 'reusable', 'admin_title'])
         ->fields('asi',
           [ 'field_asu_spotlight_items_title',
             'field_asu_spotlight_items_description',
@@ -224,6 +224,18 @@ trait GetFppDataTrait {
 
       $row->setSourceProperty('panes/' . $i . '/asu_spotlight_fpp', $result);
     }
+    if ($bundle === "banner") {
+      $bannerquery = $this->d7Connection->select('fieldable_panels_panes', 'fpp');
+      $bannerquery->leftJoin('field_data_field_banner_image', 'fbi', 'fbi.entity_id = fpp.fpid');
+      $bannerquery->fields('fpp', ['title', 'link', 'path', 'reusable', 'admin_title'])
+        ->fields('fbi', ['field_banner_image_fid'])
+        ->condition('fbi.entity_id', $fpid)
+        ->condition('fbi.deleted', 0, '=');
+      $result = $bannerquery->execute()->fetchAll();
+
+      $row->setSourceProperty('panes/' . $i . '/banner_fpp', $result);
+    }
+
   }
 
 }
