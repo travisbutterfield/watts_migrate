@@ -3,7 +3,7 @@ type: module
 description: A module to do custom migrations for the Watts website
 package: ASU Watts College
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8.8.0 || ^9
 dependencies:
   - migrate_drupal
   - migrate_tools

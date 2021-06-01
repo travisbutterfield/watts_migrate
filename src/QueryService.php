@@ -14,33 +14,6 @@ class QueryService {
    * This function gets the query from the db.
    */
   public function getQuery() {
-    // .......Unrelated but useful code......
-    // Uncomment to turn on Layout Builder on all content types
-    /*$nodes = $this->nodeTypeGetNames();
-    $success = [];
-    foreach ($nodes as $key => $value) {
-    try {
-    $entity_type = 'node';
-    $content_type = $key;
-    $view_type = 'default';
-
-    \Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay::load(
-    "{$entity_type}.{$content_type}.{$view_type}"
-    )->enableLayoutBuilder()
-    ->setOverridable()
-    ->save();
-    $success[] = $key;
-    }
-    catch (EntityStorageException $e) {
-      echo 'Caught exception: ',  $e->getMessage(), "\n";
-      continue;
-    }
-    }
-    $message = "Layout Builder was enabled on the following: %s";
-    $types = implode(", ", $success);
-    $combo = sprintf("$message", $types);
-    echo "<script>alert('$combo')</script>";*/
-    // ..... end of unrelated code .....
     $connect = Database::getConnection('default', 'default');
 
     $qd9 = $connect->select('node__layout_builder__layout', 'nlbl');
