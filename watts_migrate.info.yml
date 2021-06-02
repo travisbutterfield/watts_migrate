@@ -8,3 +8,4 @@ dependencies:
   - migrate_tools
   - migrate_plus
   - layout_builder
+  - media_migration
