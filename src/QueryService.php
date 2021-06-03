@@ -45,177 +45,189 @@ class QueryService {
     $query->condition('n.nid', $testnid);
     $results = $query->execute()->fetchAll();
 
-    dump($results);
-    $did = $results->did;
+    foreach ($results as $current_result) {
 
-    // Fetch the panes and add the result as a source property.
-    $panes = $con->select('panels_pane', 'pp')
-      ->fields('pp')
-      ->condition('pp.did', $did)
-      ->orderBy('pp.position')
-      ->orderBy('pp.panel')
-      ->execute()
-      ->fetchAll();
+      dump($current_result);
+      $did = $current_result->did;
 
-    // $i = 0;
-    foreach ($panes as $pane) {
-      dump($pane);
+      // Fetch the panes and add the result as a source property.
+      $panes = $con->select('panels_pane', 'pp')
+        ->fields('pp')
+        ->condition('pp.did', $did)
+        ->orderBy('pp.position')
+        ->orderBy('pp.panel')
+        ->execute()
+        ->fetchAll();
 
-      // Get the contents of Fieldable Panels Panes.
-      if ($pane->type === 'fieldable_panels_pane') {
+      // $i = 0;
+      foreach ($panes as $pane) {
+        dump($pane);
 
-        $fpptype = $pane->subtype;
+        // Get the contents of Fieldable Panels Panes.
+        if ($pane->type === 'fieldable_panels_pane') {
 
-        [$subtype, $id] = explode(':', $fpptype, 2);
+          $fpptype = $pane->subtype;
 
-        // There are five different subtypes that are used to handle revision
-        // locking in the database. These are: fpid, vid, uuid, vuuid, and
-        // current. We will use these to get the latest revision for each fpp
-        // and return the correct bundle.
-        switch ($subtype) {
-          case "fpid":
-          case "current":
-            $fpid = $id;
-            $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
-              ->fields('fppr', ['vid'])
-              ->condition('fppr.fpid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $vid = array_pop($getvid);
-            $getbundle = $con->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
-              ->condition('fpp.fpid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $bundle = array_pop($getbundle);
-            echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
-            break;
+          [$subtype, $id] = explode(':', $fpptype, 2);
 
-          case "vid":
-            $vid = $id;
-            $getfpid = $con->select('fieldable_panels_panes_revision', 'fppr')
-              ->fields('fppr', ['fpid'])
-              ->condition('fppr.vid', $vid)
-              ->execute()
-              ->fetchCol();
-            $fpid = array_pop($getfpid);
-            $getbundle = $con->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
-              ->condition('fpp.fpid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $bundle = array_pop($getbundle);
-            echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
-            break;
+          // There are five different subtypes that are used to handle revision
+          // locking in the database. These are: fpid, vid, uuid, vuuid, and
+          // current. We will use these to get the latest revision for each fpp
+          // and return the correct bundle.
+          switch ($subtype) {
+            case "fpid":
+            case "current":
+              $fpid = $id;
+              $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
+                ->fields('fppr', ['vid'])
+                ->condition('fppr.fpid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $vid = array_pop($getvid);
+              $getbundle = $con->select('fieldable_panels_panes', 'fpp')
+                ->fields('fpp', ['bundle'])
+                ->condition('fpp.fpid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $bundle = array_pop($getbundle);
+              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
+              break;
 
-          case "uuid":
-            $uuid = $id;
-            $getfpid = $con->select('fieldable_panels_panes', 'fpp')
-              ->fields('fpp', ['fpid'])
-              ->condition('fpp.uuid', $uuid)
-              ->execute()
-              ->fetchCol();
-            $fpid = array_pop($getfpid);
-            $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
-              ->fields('fppr', ['vid'])
-              ->condition('fppr.vid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $vid = array_pop($getvid);
-            $getbundle = $con->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
-              ->condition('fpp.fpid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $bundle = array_pop($getbundle);
-            echo "bundle = $bundle <br>uuid = $uuid <br>fpid = $fpid <br>vid = $vid<br>";
-            break;
+            case "vid":
+              $vid = $id;
+              $getfpid = $con->select('fieldable_panels_panes_revision', 'fppr')
+                ->fields('fppr', ['fpid'])
+                ->condition('fppr.vid', $vid)
+                ->execute()
+                ->fetchCol();
+              $fpid = array_pop($getfpid);
+              $getbundle = $con->select('fieldable_panels_panes', 'fpp')
+                ->fields('fpp', ['bundle'])
+                ->condition('fpp.fpid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $bundle = array_pop($getbundle);
+              echo "bundle = $bundle <br>fpid = $fpid <br>vid = $vid<br>";
+              break;
 
-          case "vuuid":
-            $vuuid = $id;
-            $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
-              ->fields('fppr', ['vid'])
-              ->condition('fppr.vuuid', $vuuid)
-              ->execute()
-              ->fetchCol();
-            $vid = array_pop($getvid);
-            $getfpid = $con->select('fieldable_panels_panes_revision', 'fppr')
-              ->fields('fppr', ['fpid'])
-              ->condition('fppr.vuuid', $vuuid)
-              ->execute()
-              ->fetchCol();
-            $fpid = array_pop($getfpid);
-            $getbundle = $con->select('fieldable_panels_panes', 'fpp')->fields('fpp', ['bundle'])
-              ->condition('fpp.fpid', $fpid)
-              ->execute()
-              ->fetchCol();
-            $bundle = array_pop($getbundle);
-            echo "bundle = $bundle <br>vuuid = $vuuid <br>fpid = $fpid <br>vid = $vid<br>";
-            break;
+            case "uuid":
+              $uuid = $id;
+              $getfpid = $con->select('fieldable_panels_panes', 'fpp')
+                ->fields('fpp', ['fpid'])
+                ->condition('fpp.uuid', $uuid)
+                ->execute()
+                ->fetchCol();
+              $fpid = array_pop($getfpid);
+              $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
+                ->fields('fppr', ['vid'])
+                ->condition('fppr.vid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $vid = array_pop($getvid);
+              $getbundle = $con->select('fieldable_panels_panes', 'fpp')
+                ->fields('fpp', ['bundle'])
+                ->condition('fpp.fpid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $bundle = array_pop($getbundle);
+              echo "bundle = $bundle <br>uuid = $uuid <br>fpid = $fpid <br>vid = $vid<br>";
+              break;
 
-          default:
-            $fpid = NULL;
-            $bundle = NULL;
-            echo "An unknown fieldable_panels_pane subtype was referenced: $subtype.<br>";
+            case "vuuid":
+              $vuuid = $id;
+              $getvid = $con->select('fieldable_panels_panes_revision', 'fppr')
+                ->fields('fppr', ['vid'])
+                ->condition('fppr.vuuid', $vuuid)
+                ->execute()
+                ->fetchCol();
+              $vid = array_pop($getvid);
+              $getfpid = $con->select('fieldable_panels_panes_revision', 'fppr')
+                ->fields('fppr', ['fpid'])
+                ->condition('fppr.vuuid', $vuuid)
+                ->execute()
+                ->fetchCol();
+              $fpid = array_pop($getfpid);
+              $getbundle = $con->select('fieldable_panels_panes', 'fpp')
+                ->fields('fpp', ['bundle'])
+                ->condition('fpp.fpid', $fpid)
+                ->execute()
+                ->fetchCol();
+              $bundle = array_pop($getbundle);
+              echo "bundle = $bundle <br>vuuid = $vuuid <br>fpid = $fpid <br>vid = $vid<br>";
+              break;
+
+            default:
+              $fpid = NULL;
+              $bundle = NULL;
+              echo "An unknown fieldable_panels_pane subtype was referenced: $subtype.<br>";
+          }
+
+          // Use the retrieved bundle to access the contents of the 'text' fpps.
+          if ($bundle === "text") {
+            $textquery = $con->select('field_data_field_basic_text_text', 'fdfbtt');
+            // Join with fpp to get the 'title' field of the pane.
+            $textquery->innerJoin('fieldable_panels_panes', 'fpp', 'fdfbtt.entity_id = fpp.fpid');
+            $textquery->fields('fpp', ['title'])
+              ->fields('fdfbtt',
+                [
+                  'field_basic_text_text_value',
+                  'field_basic_text_text_format',
+                ],
+              )
+              ->condition('fdfbtt.entity_id', $fpid);
+            $result = $textquery->execute()->fetchAll();
+            echo "FPP Text data for pane {$fpid} on node {$testnid}.";
+            dump($result);
+          }
+          if ($bundle === "hero") {
+            $heroquery = $con->select('fieldable_panels_panes', 'fpp');
+            $heroquery->leftJoin('field_data_field_webspark_hero_bgimg', 'hbi', 'hbi.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_blurb', 'hbl', 'hbl.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_gradbtn', 'hgb', 'hgb.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_height', 'hht', 'hht.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_primarybtn', 'hpb', 'hpb.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_hero_ugradbtn', 'hub', 'hub.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
+            $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
+            $heroquery->fields('hbi', ['field_webspark_hero_bgimg_fid'])
+              ->fields('hbl', ['field_webspark_hero_blurb_value'])
+              ->fields('hgb',
+                [
+                  'field_webspark_hero_gradbtn_url',
+                  'field_webspark_hero_gradbtn_title',
+                ]
+              )
+              ->fields('hht', ['field_webspark_hero_height_value'])
+              ->fields('hpb',
+                [
+                  'field_webspark_hero_primarybtn_url',
+                  'field_webspark_hero_primarybtn_title',
+                ]
+              )
+              ->fields('hub',
+                [
+                  'field_webspark_hero_ugradbtn_url',
+                  'field_webspark_hero_ugradbtn_title',
+                ]
+              )
+              ->fields('jhbi', ['field_webspark_jumbohero_bgimg_fid'])
+              ->fields('jhbl',
+                [
+                  'field_webspark_jumbohero_blurb_value',
+                  'field_webspark_jumbohero_blurb_format',
+                ]
+              )
+              ->fields('jhp', ['field_webspark_jumbo_position_value'])
+              ->condition('hbi.entity_id', $fpid);
+            $result = $heroquery->execute()->fetchAll();
+            echo "FPP hero data for pane {$fpid} on node {$testnid}.";
+            dump($result);
+          }
         }
-
-        // Use the retrieved bundle to access the contents of the 'text' fpps.
-        if ($bundle === "text") {
-          $textquery = $con->select('field_data_field_basic_text_text', 'fdfbtt');
-          // Join with fpp to get the 'title' field of the pane.
-          $textquery->innerJoin('fieldable_panels_panes', 'fpp', 'fdfbtt.entity_id = fpp.fpid');
-          $textquery->fields('fpp', ['title'])
-            ->fields('fdfbtt',
-              ['field_basic_text_text_value',
-                'field_basic_text_text_format',
-              ],
-            )
-            ->condition('fdfbtt.entity_id', $fpid);
-          $result = $textquery->execute()->fetchAll();
-          echo "FPP Text data for pane {$fpid} on node {$testnid}.";
-          dump($result);
-        }
-        if ($bundle === "hero") {
-          $heroquery = $con->select('fieldable_panels_panes', 'fpp');
-          $heroquery->leftJoin('field_data_field_webspark_hero_bgimg', 'hbi', 'hbi.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_hero_blurb', 'hbl', 'hbl.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_hero_gradbtn', 'hgb', 'hgb.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_hero_height', 'hht', 'hht.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_hero_primarybtn', 'hpb', 'hpb.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_hero_ugradbtn', 'hub', 'hub.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
-          $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
-          $heroquery->fields('hbi', ['field_webspark_hero_bgimg_fid'])
-            ->fields('hbl', ['field_webspark_hero_blurb_value'])
-            ->fields('hgb',
-              ['field_webspark_hero_gradbtn_url',
-                'field_webspark_hero_gradbtn_title',
-              ]
-            )
-            ->fields('hht', ['field_webspark_hero_height_value'])
-            ->fields('hpb',
-              ['field_webspark_hero_primarybtn_url',
-                'field_webspark_hero_primarybtn_title',
-              ]
-            )
-            ->fields('hub',
-              ['field_webspark_hero_ugradbtn_url',
-                'field_webspark_hero_ugradbtn_title',
-              ]
-            )
-            ->fields('jhbi', ['field_webspark_jumbohero_bgimg_fid'])
-            ->fields('jhbl',
-              ['field_webspark_jumbohero_blurb_value',
-                'field_webspark_jumbohero_blurb_format',
-              ]
-            )
-            ->fields('jhp', ['field_webspark_jumbo_position_value'])
-            ->condition('hbi.entity_id', $fpid);
-          $result = $heroquery->execute()->fetchAll();
-          echo "FPP hero data for pane {$fpid} on node {$testnid}.";
-          dump($result);
-        }
+        // Limit results to two panes per node, just for testing purposes.
+        // if (++$i == 2) break;.
       }
-      // Limit results to two panes per node, just for testing purposes.
-      // if (++$i == 2) break;.
     }
   }
 
