@@ -78,16 +78,16 @@ class WattsPanelizerNode extends Node {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration = NULL) {
     return new static(
-          $configuration,
-          $plugin_id,
-          $plugin_definition,
-          $migration,
-          $container->get('state'),
-          $container->get('entity_type.manager'),
-          $container->get('module_handler'),
-          $container->get('watts_migrate.d7_database'),
-          $container->get('logger.factory'),
-      );
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $migration,
+      $container->get('state'),
+      $container->get('entity_type.manager'),
+      $container->get('module_handler'),
+      $container->get('watts_migrate.d7_database'),
+      $container->get('logger.factory'),
+    );
   }
 
   /**
@@ -98,13 +98,13 @@ class WattsPanelizerNode extends Node {
     $query = parent::query();
     $query->innerJoin('panelizer_entity', 'pe', 'n.vid = pe.revision_id AND pe.entity_id = n.nid AND pe.entity_type = :type', [':type' => 'node']);
     $query->innerJoin('panels_display', 'pd', 'pe.did = pd.did');
-    $query->condition('pe.did', 0, '<>');
     $query->fields('n', ['title', 'nid', 'vid'])
       ->fields('pe', ['did'])
       ->fields('pd', ['layout']);
+    $query->condition('pe.did', 0, '<>');
     // Sometimes it is easiest to test just one node.
     // Uncomment the next line and adjust for the desired nid.
-    // $query->condition('n.nid', 83);.
+    $query->condition('n.nid', 37);
     return $query;
   }
 
@@ -132,6 +132,7 @@ class WattsPanelizerNode extends Node {
       ->condition('pe.revision_id', $row->getSourceProperty('vid'))
       ->condition('pe.entity_id', $row->getSourceProperty('nid'))
       ->condition('pe.entity_type', 'node')
+      ->condition('pe.did', 0, '<>')
       ->execute()
       ->fetchField();
 
