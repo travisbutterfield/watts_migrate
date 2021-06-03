@@ -102,7 +102,9 @@ class WattsPanelizerNode extends Node {
     $query->fields('n', ['title', 'nid', 'vid'])
       ->fields('pe', ['did'])
       ->fields('pd', ['layout']);
-//     $query->condition('n.nid', 83);
+    // Sometimes it is easiest to test just one node.
+    // Uncomment the next line and adjust for the desired nid.
+    // $query->condition('n.nid', 83);.
     return $query;
   }
 
@@ -156,6 +158,7 @@ class WattsPanelizerNode extends Node {
 
       $i = 0;
       foreach ($panes as $pane) {
+        // Get data for Fieldable Panels Panes.
         if ($pane['type'] === 'fieldable_panels_pane') {
           $this->getFppData($pane, $row, $i);
         }

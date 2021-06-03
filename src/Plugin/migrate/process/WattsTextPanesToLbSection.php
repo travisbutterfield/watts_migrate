@@ -2,6 +2,7 @@
 
 namespace Drupal\watts_migrate\Plugin\migrate\process;
 
+use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -116,24 +117,24 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
     $rowconfig['value'] = $row->getSourceProperty('panes');
     $rowconfig['nodetype'] = $row->getSourceProperty('type');
 
-    $lbload = \Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay::load(
+    $lbload = LayoutBuilderEntityViewDisplay::load(
           "node.{$rowconfig['nodetype']}.default");
     $lbtest = $lbload->isLayoutBuilderEnabled();
     if (!$lbtest) {
-       try {
-         $lbload->enableLayoutBuilder()
-             ->setOverridable()
-             ->save();
-         $format = 'Notice: Layout Builder has been enabled on the %s content type. Now continuing with migration...';
-         $print = sprintf($format, $rowconfig['nodetype']);
-         \Drupal::logger('watts_migrate')->notice($print);
-       }
-       catch (EntityStorageException $e) {
-         $format = 'An error has occurred: Layout Builder has NOT been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
-         $print = sprintf($format, $rowconfig['nodetype']);
-         \Drupal::logger('watts_migrate')->error($print);
-         exit;
-       }
+      try {
+        $lbload->enableLayoutBuilder()
+          ->setOverridable()
+          ->save();
+        $format = 'Notice: Layout Builder has been enabled on the %s content type. Now continuing with migration...';
+        $print = sprintf($format, $rowconfig['nodetype']);
+        \Drupal::logger('watts_migrate')->notice($print);
+      }
+      catch (EntityStorageException $e) {
+        $format = 'An error has occurred: Layout Builder has NOT been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
+        $print = sprintf($format, $rowconfig['nodetype']);
+        \Drupal::logger('watts_migrate')->error($print);
+        exit;
+      }
     }
     // Create blocks from each pane and wrap them in
     // SectionComponents to be assigned to the overall Section.
@@ -338,20 +339,22 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
           unset($exists);
         }
         break;
-        case 'menu_tree':
-            $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
-            $menutitle = $paneconfig['origconfig']['override_title'] == 1 ? $paneconfig['origconfig']['override_title_text'] : null;
-            $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
-                'id' => 'system_menu_block:' . $subtype,
-                'provider' => 'system',
-                'label' => $menutitle,
-                'label_display' => $paneconfig['origconfig']['override_title'] == 1 ?: 0,
-                'level' => $paneconfig['origconfig']['follow'] == 'active' ? 2 : 1,
-                'depth' => $paneconfig['origconfig']['depth'],
-                'expand_all_items' => $paneconfig['origconfig']['expanded'],
-                'context_mapping' => [],
-            ]);
-            break;
+
+      case 'menu_tree':
+        $subtype = $paneconfig['subtype'] === 'main-menu' ? 'main' : $paneconfig['subtype'];
+        $menutitle = $paneconfig['origconfig']['override_title'] == 1 ? $paneconfig['origconfig']['override_title_text'] : NULL;
+        $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+          'id' => 'system_menu_block:' . $subtype,
+          'provider' => 'system',
+          'label' => $menutitle,
+          'label_display' => $paneconfig['origconfig']['override_title'] == 1 ?: 0,
+          'level' => $paneconfig['origconfig']['follow'] == 'active' ? 2 : 1,
+          'depth' => $paneconfig['origconfig']['depth'],
+          'expand_all_items' => $paneconfig['origconfig']['expanded'],
+          'context_mapping' => [],
+        ]);
+        break;
+
       case 'node_title':
         if ($paneconfig['subtype'] === 'node_title') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
@@ -367,9 +370,9 @@ class WattsTextPanesToLbSection extends ProcessPluginBase implements ContainerFa
                 'label' => 'hidden',
                 'type' => 'string',
                 'settings' => [
-                  "link_to_entity" => 0
+                  "link_to_entity" => 0,
                 ],
-                'third_party_settings' => []
+                'third_party_settings' => [],
               ],
               'context_mapping' => [
                 'entity' => 'layout_builder.entity',
