@@ -26,8 +26,9 @@ class QueryService {
       ->fields('nlbl', ['layout_builder__layout_section']);
     $myresult = $qd9->execute()->fetchField();
     $print = unserialize($myresult);
-    echo "Layout Builder Layout Section data for Node {$testnid}.";
+    echo "D9 Layout Builder Layout Section data for Node {$testnid}.";
     dump($print);
+    echo "<hr><p>Panelizer data from the D7 database:</p>";
 
     /* The rest of this code is replicated in the source plugin
     WattsPanelizerNode and the GetFppDataTrait trait.
@@ -176,7 +177,6 @@ class QueryService {
               )
               ->condition('fdfbtt.entity_id', $fpid);
             $result = $textquery->execute()->fetchAll();
-            echo "FPP Text data for pane {$fpid} on node {$testnid}.";
             dump($result);
           }
           if ($bundle === "hero") {
