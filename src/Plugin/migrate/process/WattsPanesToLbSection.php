@@ -12,6 +12,7 @@ use Drupal\layout_builder\SectionComponent;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\watts_migrate\WattsMediaWysiwygTransformTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -170,6 +171,12 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
           $section->appendComponent($component);
         }
+        if ($paneconfig['bundle'] === 'hero' && $paneconfig['shown']) {
+          $paneconfig['hero_fpp'] = $pane['hero_fpp']['0'];
+
+          $component = $this->buildSectionComponent($rowconfig, $paneconfig);
+          $section->appendComponent($component);
+        }
         else {
           // TODO: Add ways to look up other fpp types, not just text.
           continue;
@@ -236,21 +243,41 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           ]);
         }
         if ($paneconfig['bundle'] === 'hero') {
+          $cta = Paragraph::create(['type' => 'cta']);
+          $cta->set('field_cta_link', [
+              'uri' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_url,
+              'title' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_title,
+              'options' => 'a:1:{s:10:"attributes";a:2:{s:6:"target";s:5:"_self";s:5:"class";s:24:"btn-default btn-gold btn";}}'
+            ]
+          );
+          $cta->isNew();
+          $cta->save();
+          $sizes = ['380' => 'md', '700' => 'lg'];
+          $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
           $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
               'info' => $paneconfig['titletest'],
               'type' => $paneconfig['bundle'],
-
+              'field_cta' => [
+                'target_id' => $cta->id(),
+                'target_revision_id' => $cta->getRevisionId(),
+              ],
+              'field_heading' => $paneconfig['hero_fpp']->title,
+              'field_hero_background_color' => 'gold',
+              'field_hero_size' => $herosize,
+              'field_hero_unformatted_text' => $paneconfig['hero_fpp']->field_webspark_hero_blurb_value,
+              'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
-            'id' => 'inline_block:text_content',
-            'label' => $paneconfig['titletest'],
+            'id' => 'inline_block:hero',
+            'label' => '',
             'provider' => 'layout_builder',
-            'label_display' => isset($paneconfig['title']),
+            'label_display' => '',
             'view_mode' => 'full',
+            'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
           ]);
