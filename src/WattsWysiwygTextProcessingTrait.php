@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\epa_migrations;
+namespace Drupal\watts_migrate;
 
 use DOMDocument;
 
@@ -22,7 +22,6 @@ trait WattsWysiwygTextProcessingTrait {
 
     $pattern = '/';
     $pattern .= 'class=".*?(hidden).*?"|';
-    $pattern .= 'class=".*?(visible).*?"|';
     $pattern .= '/';
 
     $matches = [];
@@ -50,7 +49,6 @@ trait WattsWysiwygTextProcessingTrait {
 
           switch ($match) {
             case 'hidden':
-            case 'visible':
               $doc = $this->transformBootstrapDisplayClasses($doc);
               break;
           }
@@ -85,56 +83,30 @@ trait WattsWysiwygTextProcessingTrait {
     // Create a DOM XPath object for searching the document.
     $xpath = new \DOMXPath($doc);
 
-    $displaymatches = $xpath->query('//*[contains(@class, "box")]');
+    $displaymatches = $xpath->query('//*[contains(@class, "hidden")]');
 
     if ($displaymatches) {
       foreach ($displaymatches as $key => $disp_wrapper) {
         // Replace bootstrap hidden/visible classes.
         $bs3_classes = [
-          'hidden-xs-down',
-          'hidden-sm-down',
-          'hidden-md-down',
-          'hidden-lg-down',
-          'hidden-xl-down',
-          'hidden-xs-up',
-          'hidden-sm-up',
-          'hidden-md-up',
-          'hidden-lg-up',
-          'hidden-xl-up',
+          'hidden-sm hidden-md hidden-lg hidden-xl',
+          'hidden-sm hidden-md hidden-lg',
           'hidden-xs',
           'hidden-sm',
           'hidden-md',
           'hidden-lg',
           'hidden-xl',
-          'visible-xs',
-          'visible-sm',
-          'visible-md',
-          'visible-lg',
-          'visible-xl',
         ];
 
 
         $bs4_classes = [
-          'd-none d-sm-block',
-          'd-none d-md-block',
-          'd-none d-lg-block',
-          'd-none d-xl-block',
-          'd-none',
-          'd-none',
-          'd-sm-none',
-          'd-md-none',
-          'd-lg-none',
-          'd-xl-none',
+          'd-block d-sm-none',
+          'd-none d-sm-none',
           'd-none d-sm-block',
           'd-block d-sm-none d-md-block',
           'd-block d-md-none d-lg-block',
           'd-block d-lg-none d-xl-block',
           'd-block d-xl-none',
-          'd-block d-sm-none',
-          'd-none d-sm-block d-md-none',
-          'd-none d-md-block d-lg-none',
-          'd-none d-lg-block d-xl-none',
-          'd-none d-xl-block',
         ];
 
         $wrapper_classes = $disp_wrapper->attributes->getNamedItem('class')->value;
