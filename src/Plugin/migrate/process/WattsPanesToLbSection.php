@@ -298,7 +298,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         // Migrate first slide of ASU Spotlight as a Hero.
         if ($paneconfig['bundle'] === 'asu_spotlight') {
           $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
-          $linktest = strstr($paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink, 'http');
+          $linktest = substr($paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink, 0, 4);
           $cta = Paragraph::create(['type' => 'cta']);
           $cta->set('field_cta_link', [
               'uri' => $linktest === 'http' ? $link : 'internal:' . $link,
