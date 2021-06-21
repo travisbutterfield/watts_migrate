@@ -98,7 +98,6 @@ trait WattsWysiwygTextProcessingTrait {
           'hidden-xl',
         ];
 
-
         $bs4_classes = [
           'd-block d-sm-none',
           'd-none d-sm-none',

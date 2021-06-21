@@ -14,6 +14,7 @@ use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\watts_migrate\WattsMediaWysiwygTransformTrait;
+use Drupal\watts_migrate\WattsWysiwygTextProcessingTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,6 +45,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactoryPluginInterface {
   use WattsMediaWysiwygTransformTrait;
+  use WattsWysiwygTextProcessingTrait;
   /**
    * Uuid generator.
    *
@@ -162,6 +164,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $text = $pane['text_fpp']['0']->field_basic_text_text_value;
           // Convert D7 media to D8 media.
           $text = $this->transformWysiwyg($text, $this->entityTypeManager);
+          $text = $this->processText($text);
           $paneconfig['title'] = $pane['text_fpp']['0']->title;
           $paneconfig['text'] = $text;
           $paneconfig['maketitle'] = substr($text, 0, 20);
@@ -177,10 +180,13 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
           $section->appendComponent($component);
         }
-        else {
-          // TODO: Add ways to look up other fpp types, not just text.
-          continue;
+        if ($paneconfig['bundle'] === 'banner' && $paneconfig['shown']) {
+          $paneconfig['banner_fpp'] = $pane['banner_fpp']['0'];
+
+          $component = $this->buildSectionComponent($rowconfig, $paneconfig);
+          $section->appendComponent($component);
         }
+        // TODO: Add ways to look up other fpp types.
       }
       elseif ($paneconfig['type'] === 'entity_field' || $paneconfig['type'] === 'node_body') {
         [$paneconfig['entity'], $paneconfig['field']] = explode(':',
@@ -257,7 +263,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
-              'info' => $paneconfig['titletest'],
+              'info' => 'Hero',
               'type' => $paneconfig['bundle'],
               'field_cta' => [
                 'target_id' => $cta->id(),
@@ -268,6 +274,31 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
               'field_hero_size' => $herosize,
               'field_hero_unformatted_text' => $paneconfig['hero_fpp']->field_webspark_hero_blurb_value,
               'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
+            ]);
+          // Create Block embedded in a Section Component. Passing a serialized
+          // Block entity is the key to making this work.
+          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+            'id' => 'inline_block:hero',
+            'label' => '',
+            'provider' => 'layout_builder',
+            'label_display' => '',
+            'view_mode' => 'full',
+            'reusable' => 0,
+            'block_serialized' => serialize($block),
+            'context_mapping' => [],
+          ]);
+        }
+        // Migrate ASU Title Banners as small Heroes.
+        if ($paneconfig['bundle'] === 'banner') {
+          $block = $this->entityTypeManager->getStorage('block_content')
+            ->create([
+              'reusable' => 0,
+              'info' => 'Banner hero (migrated)',
+              'type' => 'hero',
+              'field_heading' => $paneconfig['banner_fpp']->title,
+              'field_hero_background_color' => 'gold',
+              'field_hero_size' => 'sm',
+              'field_media' => $paneconfig['banner_fpp']->field_banner_image_fid,
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
