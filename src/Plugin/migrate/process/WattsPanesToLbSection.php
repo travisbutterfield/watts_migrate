@@ -13,6 +13,7 @@ use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\redirect\RedirectRepository;
 use Drupal\watts_migrate\WattsMediaWysiwygTransformTrait;
 use Drupal\watts_migrate\WattsWysiwygTextProcessingTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -99,12 +100,12 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-          $configuration,
-          $plugin_id,
-          $plugin_definition,
-          $container->get('uuid'),
-          $container->get('entity_type.manager')
-      );
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('uuid'),
+      $container->get('entity_type.manager'),
+    );
   }
 
   /**
@@ -121,7 +122,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
     $rowconfig['nodetype'] = $row->getSourceProperty('type');
 
     $lbload = LayoutBuilderEntityViewDisplay::load(
-          "node.{$rowconfig['nodetype']}.default");
+      "node.{$rowconfig['nodetype']}.default");
     $lbtest = $lbload->isLayoutBuilderEnabled();
     if (!$lbtest) {
       try {
@@ -182,6 +183,12 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         }
         if ($paneconfig['bundle'] === 'banner' && $paneconfig['shown']) {
           $paneconfig['banner_fpp'] = $pane['banner_fpp']['0'];
+
+          $component = $this->buildSectionComponent($rowconfig, $paneconfig);
+          $section->appendComponent($component);
+        }
+        if ($paneconfig['bundle'] === 'asu_spotlight' && $paneconfig['shown']) {
+          $paneconfig['asu_spotlight_fpp'] = $pane['asu_spotlight_fpp']['0'];
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
           $section->appendComponent($component);
@@ -274,6 +281,47 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
               'field_hero_size' => $herosize,
               'field_hero_unformatted_text' => $paneconfig['hero_fpp']->field_webspark_hero_blurb_value,
               'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
+            ]);
+          // Create Block embedded in a Section Component. Passing a serialized
+          // Block entity is the key to making this work.
+          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+            'id' => 'inline_block:hero',
+            'label' => '',
+            'provider' => 'layout_builder',
+            'label_display' => '',
+            'view_mode' => 'full',
+            'reusable' => 0,
+            'block_serialized' => serialize($block),
+            'context_mapping' => [],
+          ]);
+        }
+        // Migrate first slide of ASU Spotlight as a Hero.
+        if ($paneconfig['bundle'] === 'asu_spotlight') {
+          $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
+          $linktest = strstr($paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink, 'http');
+          $cta = Paragraph::create(['type' => 'cta']);
+          $cta->set('field_cta_link', [
+              'uri' => $linktest === 'http' ? $link : 'internal:' . $link,
+              'title' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actiontitle,
+              'options' => 'a:1:{s:10:"attributes";a:2:{s:6:"target";s:5:"_self";s:5:"class";s:24:"btn-default btn-gold btn";}}'
+            ]
+          );
+          $cta->isNew();
+          $cta->save();
+          $block = $this->entityTypeManager->getStorage('block_content')
+            ->create([
+              'reusable' => 0,
+              'info' => 'Hero',
+              'type' => 'hero',
+              'field_cta' => [
+                'target_id' => $cta->id(),
+                'target_revision_id' => $cta->getRevisionId(),
+              ],
+              'field_heading' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title,
+              'field_hero_background_color' => 'gold',
+              'field_hero_size' => 'lg',
+              'field_hero_unformatted_text' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description,
+              'field_media' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_fid,
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
