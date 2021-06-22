@@ -148,8 +148,11 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
     foreach ($value as $pane) {
       $origconfig = $pane['configuration'];
       $origconfig = unserialize($origconfig);
+      $origcss = $pane['css'];
+      $origcss = unserialize($origcss);
       $paneconfig = [];
       $paneconfig['origconfig'] = $origconfig;
+      $paneconfig['css'] = $origcss;
       $paneconfig['shown'] = $pane['shown'];
       $paneconfig['region'] = $pane['panel'];
       $paneconfig['bundle'] = $pane['bundle'];
@@ -254,8 +257,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           ],[
             'component_attributes' => [
               'block_attributes' => [
-                'id' => '',
-                'class' => '',
+                'id' => $paneconfig['css']['css_id'],
+                'class' => $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -315,8 +318,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           ],[
             'component_attributes' => [
               'block_attributes' => [
-                'id' => '',
-                'class' => '',
+                'id' => $paneconfig['css']['css_id'],
+                'class' => $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -377,8 +380,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           ],[
             'component_attributes' => [
               'block_attributes' => [
-                'id' => '',
-                'class' => '',
+                'id' => $paneconfig['css']['css_id'],
+                'class' => $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -423,8 +426,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           ],[
             'component_attributes' => [
               'block_attributes' => [
-                'id' => '',
-                'class' => '',
+                'id' => $paneconfig['css']['css_id'],
+                'class' => $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -466,6 +469,27 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
+            ],[
+              'component_attributes' => [
+                'block_attributes' => [
+                  'id' => $paneconfig['css']['css_id'],
+                  'class' => $paneconfig['css']['css_class'],
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_title_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_content_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ]
+              ]
             ]);
           }
         }
@@ -494,8 +518,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             ],[
               'component_attributes' => [
                 'block_attributes' => [
-                  'id' => '',
-                  'class' => '',
+                  'id' => $paneconfig['css']['css_id'],
+                  'class' => $paneconfig['css']['css_class'],
                   'style' => '',
                   'data' => '',
                 ],
@@ -539,6 +563,27 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
+            ],[
+              'component_attributes' => [
+                'block_attributes' => [
+                  'id' => $paneconfig['css']['css_id'],
+                  'class' => $paneconfig['css']['css_class'],
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_title_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_content_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ]
+              ]
             ]);
           }
           unset($exists);
@@ -560,8 +605,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         ],[
           'component_attributes' => [
             'block_attributes' => [
-              'id' => '',
-              'class' => '',
+              'id' => $paneconfig['css']['css_id'],
+              'class' => $paneconfig['css']['css_class'],
               'style' => '',
               'data' => '',
             ],
@@ -607,8 +652,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             ],[
               'component_attributes' => [
                 'block_attributes' => [
-                  'id' => '',
-                  'class' => '',
+                  'id' => $paneconfig['css']['css_id'],
+                  'class' => $paneconfig['css']['css_class'],
                   'style' => '',
                   'data' => '',
                 ],
