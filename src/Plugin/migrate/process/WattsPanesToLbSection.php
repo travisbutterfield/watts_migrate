@@ -168,8 +168,6 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $text = $this->processText($text);
           $paneconfig['title'] = $pane['text_fpp']['0']->title;
           $paneconfig['text'] = $text;
-          $paneconfig['maketitle'] = substr($text, 0, 20);
-          $paneconfig['titletest'] = $paneconfig['title'] ?? $paneconfig['maketitle'] . '...';
           $paneconfig['textformat'] = $pane['text_fpp']['0']->field_basic_text_text_format ?: 'full_html';
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
@@ -235,7 +233,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
-              'info' => $paneconfig['titletest'],
+              'info' => $paneconfig['title'],
               'type' => $paneconfig['bundle'] === 'text' ? 'text_content' : $paneconfig['bundle'],
               'field_formatted_text' => [
                 // These values come from the configuration of the panel pane.
@@ -247,12 +245,33 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
             'id' => 'inline_block:text_content',
-            'label' => $paneconfig['titletest'],
+            'label' => $paneconfig['title'],
             'provider' => 'layout_builder',
             'label_display' => isset($paneconfig['title']),
             'view_mode' => 'full',
             'block_serialized' => serialize($block),
             'context_mapping' => [],
+          ],[
+            'component_attributes' => [
+              'block_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_title_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_content_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ]
+            ]
           ]);
         }
         if ($paneconfig['bundle'] === 'hero') {
@@ -286,13 +305,34 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
             'id' => 'inline_block:hero',
-            'label' => '',
+            'label' => 'Hero',
             'provider' => 'layout_builder',
-            'label_display' => '',
+            'label_display' => 0,
             'view_mode' => 'full',
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
+          ],[
+            'component_attributes' => [
+              'block_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_title_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_content_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ]
+            ]
           ]);
         }
         // Migrate first slide of ASU Spotlight as a Hero.
@@ -327,13 +367,34 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
             'id' => 'inline_block:hero',
-            'label' => '',
+            'label' => 'Hero',
             'provider' => 'layout_builder',
-            'label_display' => '',
+            'label_display' => 0,
             'view_mode' => 'full',
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
+          ],[
+            'component_attributes' => [
+              'block_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_title_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_content_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ]
+            ]
           ]);
         }
         // Migrate ASU Title Banners as small Heroes.
@@ -352,13 +413,34 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
             'id' => 'inline_block:hero',
-            'label' => '',
+            'label' => 'Hero',
             'provider' => 'layout_builder',
-            'label_display' => '',
+            'label_display' => 0,
             'view_mode' => 'full',
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
+          ],[
+            'component_attributes' => [
+              'block_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_title_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ],
+              'block_content_attributes' => [
+                'id' => '',
+                'class' => '',
+                'style' => '',
+                'data' => '',
+              ]
+            ]
           ]);
         }
         break;
@@ -372,7 +454,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           if ($exists) {
             $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
               'id' => 'field_block:node:' . $rowconfig['nodetype'] . ':body',
-              'label' => $paneconfig['titletest'],
+              'label' => 'Body',
               'provider' => 'layout_builder',
               'label_display' => 0,
               'formatter' => [
@@ -409,6 +491,27 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
+            ],[
+              'component_attributes' => [
+                'block_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_title_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_content_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ]
+              ]
             ]);
           }
           unset($exists);
@@ -454,6 +557,27 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           'depth' => $paneconfig['origconfig']['depth'],
           'expand_all_items' => $paneconfig['origconfig']['expanded'],
           'context_mapping' => [],
+        ],[
+          'component_attributes' => [
+            'block_attributes' => [
+              'id' => '',
+              'class' => '',
+              'style' => '',
+              'data' => '',
+            ],
+            'block_title_attributes' => [
+              'id' => '',
+              'class' => '',
+              'style' => '',
+              'data' => '',
+            ],
+            'block_content_attributes' => [
+              'id' => '',
+              'class' => '',
+              'style' => '',
+              'data' => '',
+            ]
+          ]
         ]);
         break;
 
@@ -480,6 +604,27 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
+            ],[
+              'component_attributes' => [
+                'block_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_title_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ],
+                'block_content_attributes' => [
+                  'id' => '',
+                  'class' => '',
+                  'style' => '',
+                  'data' => '',
+                ]
+              ]
             ]);
           }
         }

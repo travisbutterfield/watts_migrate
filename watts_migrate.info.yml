@@ -9,3 +9,5 @@ dependencies:
   - migrate_plus
   - layout_builder
   - media_migration
+  - layout_builder_component_attributes
+  - radix_custom
