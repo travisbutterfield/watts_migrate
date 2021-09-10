@@ -296,19 +296,21 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $cta->save();
           $sizes = ['380' => 'md', '700' => 'lg'];
           $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
+          $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
+          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
           $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
               'info' => 'Hero',
               'type' => $paneconfig['bundle'],
-              'field_cta' => [
+              'field_two_cta' => [
                 'target_id' => $cta->id(),
                 'target_revision_id' => $cta->getRevisionId(),
               ],
               'field_heading' => $paneconfig['hero_fpp']->title,
               'field_hero_background_color' => 'gold',
               'field_hero_size' => $herosize,
-              'field_hero_unformatted_text' => $paneconfig['hero_fpp']->field_webspark_hero_blurb_value,
+              'field_hero_unformatted_text' => $striptext,
               'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
@@ -363,6 +365,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           );
           $cta->isNew();
           $cta->save();
+          $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
+          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
           $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
@@ -375,7 +379,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
               'field_heading' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title,
               'field_hero_background_color' => 'gold',
               'field_hero_size' => 'lg',
-              'field_hero_unformatted_text' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description,
+              'field_hero_unformatted_text' => $striptext,
               'field_media' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_fid,
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
