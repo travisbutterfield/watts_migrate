@@ -12,7 +12,7 @@ use Drupal\watts_migrate\WattsMediaWysiwygTransformTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Given a set of panes, returns a layout builder section.
+ * Convert media and captions to D9.
  *
  * @MigrateProcessPlugin(
  *   id = "process_media_with_captions"
@@ -20,21 +20,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * Usage:
  *
- * To convert an array of panes to blocks laid out in a layout builder
- * section, do the following:
+ * To convert media entities to d9 and filter d7 image captions:
  *
  * @code
- * layout_builder__layout:
- *   -
- *     plugin: skip_on_empty
- *     method: process
- *     source: panes
- *   -
- *     plugin: single_value
+ * process:
  *   -
  *     plugin: process_media_with_captions
- *   -
- *     plugin: multiple_values
  * @endcode
  */
 class ProcessMediaWithCaptions extends ProcessPluginBase implements ContainerFactoryPluginInterface {
