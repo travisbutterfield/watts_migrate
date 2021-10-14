@@ -45,8 +45,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @endcode
  */
 class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactoryPluginInterface {
-  use WattsMediaWysiwygTransformTrait;
   use WattsWysiwygTextProcessingTrait;
+  use WattsMediaWysiwygTransformTrait;
   /**
    * Uuid generator.
    *
@@ -167,8 +167,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         if ($paneconfig['bundle'] === "text" && $paneconfig['shown']) {
           $text = $pane['text_fpp']['0']->field_basic_text_text_value;
           // Convert D7 media to D8 media.
-          $text = $this->transformWysiwyg($text, $this->entityTypeManager);
           $text = $this->processText($text);
+          $text = $this->transformWysiwyg($text, $this->entityTypeManager);
           $paneconfig['title'] = $pane['text_fpp']['0']->title;
           $paneconfig['text'] = $text;
           $paneconfig['textformat'] = $pane['text_fpp']['0']->field_basic_text_text_format ?: 'full_html';

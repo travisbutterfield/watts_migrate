@@ -25,7 +25,23 @@ trait WattsMediaWysiwygTransformTrait {
   public function transformWysiwyg($wysiwyg_content, EntityTypeManagerInterface $entityTypeManager) {
     $view_mode = NULL;
 
-    $pattern = '/\[\[(?<tag_info>.+?"type":"media".+?)\]\]/s';
+    $wysiwyg_content_is_array = is_array($wysiwyg_content);
+    $text = (string) ($wysiwyg_content_is_array ? $wysiwyg_content['value'] : $wysiwyg_content);
+
+    if ($wysiwyg_content_is_array) {
+      $wysiwyg_content['value'] = $text;
+    }
+    else {
+      $value = $text;
+    }
+    $caption = '/\[caption.+?\="(?<caption>.+?)"\]/s';
+    preg_match($caption, $text, $matches);
+    if (count($matches) > 0) {
+      $pattern = '/\[caption.+?\="(?<caption>.+?)"\](?<media_element><div.+?class=".*?media-element.*?".*?>)\[\[(?<tag_info>.+?"type":"media".+?)\]\]<\/div>\[\/caption\]/s';
+    }
+    else {
+      $pattern = '/(?<media_element><div.+?class=".*?media-element.*?".*?>)\[\[(?<tag_info>.+?"type":"media".+?)\]\]<\/div>/s';
+    }
 
     $media_embed_replacement_template = <<<'TEMPLATE'
 <drupal-media
@@ -49,7 +65,7 @@ TEMPLATE;
 
           return sprintf($media_embed_replacement_template,
           $tag_info['fields']['field_file_image_alt_text[und][0][value]'] ?? '',
-          htmlentities(stripslashes(urldecode($tag_info['fields']['field_caption[und][0][value]']))) ?? '',
+          $matches['caption'] ?? '',
           $media_entity_uuid,
           $view_mode
         );
