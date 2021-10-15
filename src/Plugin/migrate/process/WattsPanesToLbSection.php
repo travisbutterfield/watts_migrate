@@ -142,7 +142,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
     }
     // Create blocks from each pane and wrap them in
     // SectionComponents to be assigned to the overall Section.
-    $section = new Section($layout);
+    $hero_section = new Section('layout_onecol');
+    $panelizer_section = new Section($layout);
 
     $i = 0;
     foreach ($value as $pane) {
@@ -174,25 +175,25 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $paneconfig['textformat'] = $pane['text_fpp']['0']->field_basic_text_text_format ?: 'full_html';
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
-          $section->appendComponent($component);
+          $panelizer_section->appendComponent($component);
         }
         if ($paneconfig['bundle'] === 'hero' && $paneconfig['shown']) {
           $paneconfig['hero_fpp'] = $pane['hero_fpp']['0'];
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
-          $section->appendComponent($component);
+          $hero_section->appendComponent($component);
         }
         if ($paneconfig['bundle'] === 'banner' && $paneconfig['shown']) {
           $paneconfig['banner_fpp'] = $pane['banner_fpp']['0'];
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
-          $section->appendComponent($component);
+          $hero_section->appendComponent($component);
         }
         if ($paneconfig['bundle'] === 'asu_spotlight' && $paneconfig['shown']) {
           $paneconfig['asu_spotlight_fpp'] = $pane['asu_spotlight_fpp']['0'];
 
           $component = $this->buildSectionComponent($rowconfig, $paneconfig);
-          $section->appendComponent($component);
+          $hero_section->appendComponent($component);
         }
         // TODO: Add ways to look up other fpp types.
       }
@@ -201,17 +202,17 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $paneconfig['subtype'], 2);
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
         if ($component) {
-          $section->appendComponent($component);
+          $panelizer_section->appendComponent($component);
         }
       }
       elseif ($paneconfig['type'] === 'menu_tree' || $paneconfig['type'] === 'node_title') {
         $component = $this->buildSectionComponent($rowconfig, $paneconfig);
-        $section->appendComponent($component);
+        $panelizer_section->appendComponent($component);
       }
       $i++;
 
     }
-    return $section;
+    return [$hero_section, $panelizer_section];
   }
 
   /**
@@ -315,7 +316,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
-          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+          $component = new SectionComponent($this->uuid->generate(), 'content', [
             'id' => 'inline_block:hero',
             'label' => 'Hero',
             'provider' => 'layout_builder',
@@ -384,7 +385,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
-          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+          $component = new SectionComponent($this->uuid->generate(), 'content', [
             'id' => 'inline_block:hero',
             'label' => 'Hero',
             'provider' => 'layout_builder',
@@ -430,7 +431,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             ]);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
-          $component = new SectionComponent($this->uuid->generate(), $paneconfig['region'], [
+          $component = new SectionComponent($this->uuid->generate(), 'content', [
             'id' => 'inline_block:hero',
             'label' => 'Hero',
             'provider' => 'layout_builder',

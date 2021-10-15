@@ -15,7 +15,7 @@ class QueryService {
    * This function gets query data from the db.
    */
   public function getQuery() {
-    $testnid = 107;
+    $testnid = 59;
 
     // This block of code unserializes Layout Builder data from the D9 database.
     // It is useful for testing how to add section content to Layout Builder.
@@ -24,10 +24,15 @@ class QueryService {
     // Test one node.
     $qd9->condition('nlbl.entity_id', $testnid)
       ->fields('nlbl', ['layout_builder__layout_section']);
-    $myresult = $qd9->execute()->fetchField();
-    $print = unserialize($myresult);
+    $myresult = $qd9->execute()->fetchAll();
+    foreach($myresult as $poop) {
+      $test = unserialize($poop->layout_builder__layout_section);
+      dump($test);
+    }
+
     echo "D9 Layout Builder Layout Section data for Node {$testnid}.";
-    dump($print);
+
+
     echo "<hr><p>Panelizer data from the D7 database:</p>";
 
     /* The rest of this code is replicated in the source plugin
