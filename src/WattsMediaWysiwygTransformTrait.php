@@ -35,8 +35,8 @@ trait WattsMediaWysiwygTransformTrait {
       $value = $text;
     }
     $caption = '/\[caption.+?\="(?<caption>.+?)"\]/s';
-    preg_match($caption, $text, $matches);
-    if (count($matches) > 0) {
+    preg_match($caption, $text, $mymatches);
+    if (count($mymatches) > 0) {
       $pattern = '/\[caption.+?\="(?<caption>.+?)"\](?<media_element><div.+?class=".*?media-element.*?".*?>)\[\[(?<tag_info>.+?"type":"media".+?)\]\]<\/div>\[\/caption\]/s';
     }
     else {

@@ -41,4 +41,4 @@ destination:
   default_bundle: action_nexus_article
 migration_dependencies:
   required:
-    - upgrade_d7_node_complete_action_nexus_article
+    - upgrade_d7_node_action_nexus_article

@@ -41,4 +41,4 @@ destination:
   default_bundle: chcyd_page
 migration_dependencies:
   required:
-    - upgrade_d7_node_complete_chcyd_page
+    - upgrade_d7_node_chcyd_page

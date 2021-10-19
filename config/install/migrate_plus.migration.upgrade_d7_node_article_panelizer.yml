@@ -41,4 +41,4 @@ destination:
   default_bundle: article
 migration_dependencies:
   required:
-    - upgrade_d7_node_complete_article
+    - upgrade_d7_node_article

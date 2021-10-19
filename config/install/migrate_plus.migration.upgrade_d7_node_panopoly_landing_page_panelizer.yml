@@ -38,4 +38,4 @@ destination:
   default_bundle: panopoly_landing_page
 migration_dependencies:
   required:
-    - upgrade_d7_node_complete_panopoly_landing_page
+    - upgrade_d7_node_panopoly_landing_page
