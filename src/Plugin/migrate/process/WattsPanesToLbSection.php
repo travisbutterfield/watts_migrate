@@ -280,21 +280,23 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         }
         if ($paneconfig['bundle'] === 'hero') {
           $link = $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_url;
-          $linktest = substr($link, 0, 4);
-          $cta = Paragraph::create(['type' => 'cta']);
-          $cta->set('field_cta_link', [
-              'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
-              'title' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_title,
-              'options' => [
-                'attributes' => [
-                  'target' => '_self',
-                  'class' => 'btn-default btn-gold btn',
+          if (isset($link)) {
+            $linktest = substr($link, 0, 4);
+            $cta = Paragraph::create(['type' => 'cta']);
+            $cta->set('field_cta_link', [
+                'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
+                'title' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_title,
+                'options' => [
+                  'attributes' => [
+                    'target' => '_self',
+                    'class' => 'btn-default btn-gold btn',
+                  ],
                 ],
-              ],
-            ]
-          );
-          $cta->isNew();
-          $cta->save();
+              ]
+            );
+            $cta->isNew();
+            $cta->save();
+          }
           $sizes = ['380' => 'md', '700' => 'lg'];
           $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
           $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
@@ -351,21 +353,23 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         // Migrate first slide of ASU Spotlight as a Hero.
         if ($paneconfig['bundle'] === 'asu_spotlight') {
           $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
-          $linktest = substr($link, 0, 4);
-          $cta = Paragraph::create(['type' => 'cta']);
-          $cta->set('field_cta_link', [
-              'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
-              'title' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actiontitle,
-              'options' => [
-                'attributes' => [
-                  'target' => '_self',
-                  'class' => 'btn-default btn-gold btn',
+          if (isset($link)) {
+            $linktest = substr($link, 0, 4);
+            $cta = Paragraph::create(['type' => 'cta']);
+            $cta->set('field_cta_link', [
+                'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
+                'title' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actiontitle,
+                'options' => [
+                  'attributes' => [
+                    'target' => '_self',
+                    'class' => 'btn-default btn-gold btn',
+                  ],
                 ],
-              ],
-            ]
-          );
-          $cta->isNew();
-          $cta->save();
+              ]
+            );
+            $cta->isNew();
+            $cta->save();
+          }
           $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
           $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
           $block = $this->entityTypeManager->getStorage('block_content')
