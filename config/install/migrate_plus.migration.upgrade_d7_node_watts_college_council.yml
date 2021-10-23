@@ -1,8 +1,8 @@
-uuid: a50af323-1af4-46e0-a3d3-12fb6ddf1015
+uuid: 815dce5c-9539-4ce6-a9a5-75f5167a263f
 langcode: en
 status: true
 dependencies: {  }
-id: upgrade_d7_node_page
+id: upgrade_d7_node_watts_college_council
 class: Drupal\node\Plugin\migrate\D7NodeTranslation
 field_plugin_method: null
 cck_plugin_method: null
@@ -10,10 +10,10 @@ migration_tags:
   - 'Drupal 7'
   - Content
 migration_group: migrate_drupal_7
-label: 'Node (Basic Page)'
+label: 'Node (Watts College Council)'
 source:
   plugin: d7_node
-  node_type: page
+  node_type: watts_college_council
 process:
   nid:
     -
@@ -72,46 +72,38 @@ process:
     -
       plugin: get
       source: source_langcode
-  comment_node_page/0/status:
+  comment_node_watts_college_council/0/status:
     -
       plugin: get
       source: comment
-  body:
+  field_council_member_photo:
+    -
+      plugin: media_migration_delta_sort
+      source: field_council_member_photo
+    -
+      plugin: sub_process
+      process:
+        target_id: fid
+  field_council_member_first_name:
     -
       plugin: get
-      source: body
+      source: field_council_member_first_name
     -
       plugin: process_media_with_captions
-    -
-      plugin: ckeditor_link_file_to_linkit
-    -
-      plugin: img_tag_to_embed
-  field_featured_categories:
-    -
-      plugin: sub_process
-      source: field_featured_categories
-      process:
-        target_id: tid
-  field_featured_image:
-    -
-      plugin: media_migration_delta_sort
-      source: field_featured_image
-    -
-      plugin: sub_process
-      process:
-        target_id: fid
-  field_featured_status:
+  field_council_member_title:
     -
       plugin: get
-      source: field_featured_status
-  field_documents:
+      source: field_council_member_title
+  field_profile_link:
     -
-      plugin: media_migration_delta_sort
-      source: field_documents
+      plugin: field_link
+      source: field_profile_link
+  field_council_member_major:
     -
-      plugin: sub_process
-      process:
-        target_id: fid
+      plugin: get
+      source: field_council_member_major
+    -
+      plugin: process_media_with_captions
   field_metatag:
     -
       plugin: d7_metatag_entities
@@ -119,24 +111,21 @@ process:
 destination:
   plugin: 'entity:node'
   translations: true
-  default_bundle: page
+  default_bundle: watts_college_council
 migration_dependencies:
   required:
     - upgrade_d7_user
     - upgrade_d7_node_type
     - upgrade_d7_file_entity_image_public
     - upgrade_d7_file_entity_image_private
-    - upgrade_d7_file_entity_document_public
-    - upgrade_d7_file_entity_document_private
     - upgrade_d7_file_plain_application_public
     - upgrade_d7_file_plain_application_private
     - upgrade_d7_file_entity_video_vimeo
     - upgrade_d7_file_entity_video_youtube
+    - upgrade_d7_file_entity_document_public
+    - upgrade_d7_file_entity_document_private
     - upgrade_d7_file_entity_audio_public
     - upgrade_d7_file_entity_video_public
   optional:
     - upgrade_d7_field_instance
     - upgrade_d7_comment_field_instance
-    - upgrade_d7_metatag_field_node
-    - upgrade_d7_metatag_field_instance_node_page
-    - upgrade_d7_metatag_field_instance_widget_settings_node_page

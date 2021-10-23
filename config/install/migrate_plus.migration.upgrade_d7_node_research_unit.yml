@@ -1,8 +1,8 @@
-uuid: a50af323-1af4-46e0-a3d3-12fb6ddf1015
+uuid: ab70111d-f663-4ae7-bdb6-1585ebb16f5e
 langcode: en
 status: true
 dependencies: {  }
-id: upgrade_d7_node_page
+id: upgrade_d7_node_research_unit
 class: Drupal\node\Plugin\migrate\D7NodeTranslation
 field_plugin_method: null
 cck_plugin_method: null
@@ -10,10 +10,10 @@ migration_tags:
   - 'Drupal 7'
   - Content
 migration_group: migrate_drupal_7
-label: 'Node (Basic Page)'
+label: 'Node (Research unit)'
 source:
   plugin: d7_node
-  node_type: page
+  node_type: research_unit
 process:
   nid:
     -
@@ -72,7 +72,7 @@ process:
     -
       plugin: get
       source: source_langcode
-  comment_node_page/0/status:
+  comment_node_research_unit/0/status:
     -
       plugin: get
       source: comment
@@ -86,32 +86,80 @@ process:
       plugin: ckeditor_link_file_to_linkit
     -
       plugin: img_tag_to_embed
-  field_featured_categories:
+  field_headshot_of_leader:
+    -
+      plugin: media_migration_delta_sort
+      source: field_headshot_of_leader
     -
       plugin: sub_process
-      source: field_featured_categories
+      process:
+        target_id: fid
+  field_leader2_affiliation_s_:
+    -
+      plugin: sub_process
+      source: field_leader2_affiliation_s_
       process:
         target_id: tid
-  field_featured_image:
-    -
-      plugin: media_migration_delta_sort
-      source: field_featured_image
-    -
-      plugin: sub_process
-      process:
-        target_id: fid
-  field_featured_status:
+  field_leader2_first_name:
     -
       plugin: get
-      source: field_featured_status
-  field_documents:
+      source: field_leader2_first_name
+  field_leader2_headshot:
     -
       plugin: media_migration_delta_sort
-      source: field_documents
+      source: field_leader2_headshot
     -
       plugin: sub_process
       process:
         target_id: fid
+  field_leader2_last_name:
+    -
+      plugin: get
+      source: field_leader2_last_name
+  field_leader2_profile_link:
+    -
+      plugin: field_link
+      source: field_leader2_profile_link
+  field_leader2_title_s_:
+    -
+      plugin: get
+      source: field_leader2_title_s_
+  field_leader_affiliation_s_:
+    -
+      plugin: sub_process
+      source: field_leader_affiliation_s_
+      process:
+        target_id: tid
+  field_leader_first_name:
+    -
+      plugin: get
+      source: field_leader_first_name
+  field_leader_last_name:
+    -
+      plugin: get
+      source: field_leader_last_name
+  field_leader_profile_link:
+    -
+      plugin: field_link
+      source: field_leader_profile_link
+  field_leader_title:
+    -
+      plugin: get
+      source: field_leader_title
+  field_unit_affiliation_s_:
+    -
+      plugin: sub_process
+      source: field_unit_affiliation_s_
+      process:
+        target_id: tid
+  field_unit_link:
+    -
+      plugin: field_link
+      source: field_unit_link
+  field_unit_type:
+    -
+      plugin: get
+      source: field_unit_type
   field_metatag:
     -
       plugin: d7_metatag_entities
@@ -119,24 +167,24 @@ process:
 destination:
   plugin: 'entity:node'
   translations: true
-  default_bundle: page
+  default_bundle: research_unit
 migration_dependencies:
   required:
     - upgrade_d7_user
     - upgrade_d7_node_type
     - upgrade_d7_file_entity_image_public
     - upgrade_d7_file_entity_image_private
-    - upgrade_d7_file_entity_document_public
-    - upgrade_d7_file_entity_document_private
     - upgrade_d7_file_plain_application_public
     - upgrade_d7_file_plain_application_private
     - upgrade_d7_file_entity_video_vimeo
     - upgrade_d7_file_entity_video_youtube
+    - upgrade_d7_file_entity_document_public
+    - upgrade_d7_file_entity_document_private
     - upgrade_d7_file_entity_audio_public
     - upgrade_d7_file_entity_video_public
   optional:
     - upgrade_d7_field_instance
     - upgrade_d7_comment_field_instance
     - upgrade_d7_metatag_field_node
-    - upgrade_d7_metatag_field_instance_node_page
-    - upgrade_d7_metatag_field_instance_widget_settings_node_page
+    - upgrade_d7_metatag_field_instance_node_research_unit
+    - upgrade_d7_metatag_field_instance_widget_settings_node_research_unit

@@ -280,6 +280,20 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         }
         if ($paneconfig['bundle'] === 'hero') {
           $link = $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_url;
+          $sizes = ['380' => 'md', '700' => 'lg'];
+          $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
+          $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
+          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
+          $create_arr = [
+            'reusable' => 0,
+            'info' => 'Hero',
+            'type' => $paneconfig['bundle'],
+            'field_heading' => $paneconfig['hero_fpp']->title,
+            'field_hero_background_color' => 'gold',
+            'field_hero_size' => $herosize,
+            'field_hero_unformatted_text' => $striptext,
+            'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
+          ];
           if (isset($link)) {
             $linktest = substr($link, 0, 4);
             $cta = Paragraph::create(['type' => 'cta']);
@@ -296,26 +310,17 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             );
             $cta->isNew();
             $cta->save();
-          }
-          $sizes = ['380' => 'md', '700' => 'lg'];
-          $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
-          $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
-          $block = $this->entityTypeManager->getStorage('block_content')
-            ->create([
-              'reusable' => 0,
-              'info' => 'Hero',
-              'type' => $paneconfig['bundle'],
+            $cta_arr = [
               'field_two_cta' => [
                 'target_id' => $cta->id(),
                 'target_revision_id' => $cta->getRevisionId(),
               ],
-              'field_heading' => $paneconfig['hero_fpp']->title,
-              'field_hero_background_color' => 'gold',
-              'field_hero_size' => $herosize,
-              'field_hero_unformatted_text' => $striptext,
-              'field_media' => $paneconfig['hero_fpp']->field_webspark_hero_bgimg_fid,
-            ]);
+            ];
+            $create_arr['field_two_cta'] = $cta_arr['field_two_cta'];
+          }
+          $block = $this->entityTypeManager->getStorage('block_content')
+            ->create($create_arr);
+
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), 'content', [
@@ -331,7 +336,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
-                'class' => $paneconfig['css']['css_class'],
+                'class' => "mb-6 " . $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -353,6 +358,18 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         // Migrate first slide of ASU Spotlight as a Hero.
         if ($paneconfig['bundle'] === 'asu_spotlight') {
           $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
+          $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
+          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
+          $create_arr = [
+            'reusable' => 0,
+            'info' => 'Hero',
+            'type' => 'hero',
+            'field_heading' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title,
+            'field_hero_background_color' => 'gold',
+            'field_hero_size' => 'lg',
+            'field_hero_unformatted_text' => $striptext,
+            'field_media' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_fid,
+          ];
           if (isset($link)) {
             $linktest = substr($link, 0, 4);
             $cta = Paragraph::create(['type' => 'cta']);
@@ -369,24 +386,16 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             );
             $cta->isNew();
             $cta->save();
-          }
-          $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
-          $block = $this->entityTypeManager->getStorage('block_content')
-            ->create([
-              'reusable' => 0,
-              'info' => 'Hero',
-              'type' => 'hero',
-              'field_cta' => [
+            $cta_arr = [
+              'field_two_cta' => [
                 'target_id' => $cta->id(),
                 'target_revision_id' => $cta->getRevisionId(),
               ],
-              'field_heading' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title,
-              'field_hero_background_color' => 'gold',
-              'field_hero_size' => 'lg',
-              'field_hero_unformatted_text' => $striptext,
-              'field_media' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_fid,
-            ]);
+            ];
+            $create_arr['field_two_cta'] = $cta_arr['field_two_cta'];
+          }
+          $block = $this->entityTypeManager->getStorage('block_content')
+            ->create($create_arr);
           // Create Block embedded in a Section Component. Passing a serialized
           // Block entity is the key to making this work.
           $component = new SectionComponent($this->uuid->generate(), 'content', [
@@ -402,7 +411,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
-                'class' => $paneconfig['css']['css_class'],
+                'class' => "mb-6 " . $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],
@@ -448,7 +457,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
-                'class' => $paneconfig['css']['css_class'],
+                'class' => "mb-6 " . $paneconfig['css']['css_class'],
                 'style' => '',
                 'data' => '',
               ],

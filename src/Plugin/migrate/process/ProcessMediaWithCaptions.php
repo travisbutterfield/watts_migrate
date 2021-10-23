@@ -96,15 +96,6 @@ class ProcessMediaWithCaptions extends ProcessPluginBase implements ContainerFac
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     $value = $this->transformWysiwyg($value, $this->entityTypeManager);
-    $value_is_array = is_array($value);
-    $text = (string) ($value_is_array ? $value['value'] : $value);
-
-    if ($value_is_array) {
-      $value['value'] = $text;
-    }
-    else {
-      $value = $text;
-    }
     return $value;
   }
 

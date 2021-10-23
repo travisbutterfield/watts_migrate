@@ -1,8 +1,8 @@
-uuid: a50af323-1af4-46e0-a3d3-12fb6ddf1015
+uuid: e051df10-fe5d-42fd-bd84-bb9bbb2ac5dc
 langcode: en
 status: true
 dependencies: {  }
-id: upgrade_d7_node_page
+id: upgrade_d7_node_ugpresentations
 class: Drupal\node\Plugin\migrate\D7NodeTranslation
 field_plugin_method: null
 cck_plugin_method: null
@@ -10,10 +10,10 @@ migration_tags:
   - 'Drupal 7'
   - Content
 migration_group: migrate_drupal_7
-label: 'Node (Basic Page)'
+label: 'Node (UGPresentations)'
 source:
   plugin: d7_node
-  node_type: page
+  node_type: ugpresentations
 process:
   nid:
     -
@@ -72,46 +72,46 @@ process:
     -
       plugin: get
       source: source_langcode
-  comment_node_page/0/status:
+  comment_node_ugpresentations/0/status:
     -
       plugin: get
       source: comment
-  body:
+  field_document:
+    -
+      plugin: media_migration_delta_sort
+      source: field_document
+    -
+      plugin: sub_process
+      process:
+        target_id: fid
+  field_image:
+    -
+      plugin: media_migration_delta_sort
+      source: field_image
+    -
+      plugin: sub_process
+      process:
+        target_id: fid
+  field_students:
     -
       plugin: get
-      source: body
+      source: field_students
     -
       plugin: process_media_with_captions
-    -
-      plugin: ckeditor_link_file_to_linkit
-    -
-      plugin: img_tag_to_embed
-  field_featured_categories:
+  field_year:
     -
       plugin: sub_process
-      source: field_featured_categories
+      source: field_year
       process:
-        target_id: tid
-  field_featured_image:
+        value:
+          plugin: format_date
+          from_format: 'Y-m-d H:i:s'
+          to_format: Y-m-d
+          source: value
+  field_youtube_link:
     -
-      plugin: media_migration_delta_sort
-      source: field_featured_image
-    -
-      plugin: sub_process
-      process:
-        target_id: fid
-  field_featured_status:
-    -
-      plugin: get
-      source: field_featured_status
-  field_documents:
-    -
-      plugin: media_migration_delta_sort
-      source: field_documents
-    -
-      plugin: sub_process
-      process:
-        target_id: fid
+      plugin: field_link
+      source: field_youtube_link
   field_metatag:
     -
       plugin: d7_metatag_entities
@@ -119,15 +119,15 @@ process:
 destination:
   plugin: 'entity:node'
   translations: true
-  default_bundle: page
+  default_bundle: ugpresentations
 migration_dependencies:
   required:
     - upgrade_d7_user
     - upgrade_d7_node_type
-    - upgrade_d7_file_entity_image_public
-    - upgrade_d7_file_entity_image_private
     - upgrade_d7_file_entity_document_public
     - upgrade_d7_file_entity_document_private
+    - upgrade_d7_file_entity_image_public
+    - upgrade_d7_file_entity_image_private
     - upgrade_d7_file_plain_application_public
     - upgrade_d7_file_plain_application_private
     - upgrade_d7_file_entity_video_vimeo
@@ -137,6 +137,3 @@ migration_dependencies:
   optional:
     - upgrade_d7_field_instance
     - upgrade_d7_comment_field_instance
-    - upgrade_d7_metatag_field_node
-    - upgrade_d7_metatag_field_instance_node_page
-    - upgrade_d7_metatag_field_instance_widget_settings_node_page

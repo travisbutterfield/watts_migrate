@@ -1,8 +1,8 @@
-uuid: a50af323-1af4-46e0-a3d3-12fb6ddf1015
+uuid: be9f1634-5187-4e60-b52d-1d78e5df3705
 langcode: en
 status: true
 dependencies: {  }
-id: upgrade_d7_node_page
+id: upgrade_d7_node_pastor_article
 class: Drupal\node\Plugin\migrate\D7NodeTranslation
 field_plugin_method: null
 cck_plugin_method: null
@@ -10,10 +10,10 @@ migration_tags:
   - 'Drupal 7'
   - Content
 migration_group: migrate_drupal_7
-label: 'Node (Basic Page)'
+label: 'Node (Pastor Article)'
 source:
   plugin: d7_node
-  node_type: page
+  node_type: pastor_article
 process:
   nid:
     -
@@ -72,7 +72,7 @@ process:
     -
       plugin: get
       source: source_langcode
-  comment_node_page/0/status:
+  comment_node_pastor_article/0/status:
     -
       plugin: get
       source: comment
@@ -92,6 +92,10 @@ process:
       source: field_featured_categories
       process:
         target_id: tid
+  field_featured_status:
+    -
+      plugin: get
+      source: field_featured_status
   field_featured_image:
     -
       plugin: media_migration_delta_sort
@@ -100,10 +104,6 @@ process:
       plugin: sub_process
       process:
         target_id: fid
-  field_featured_status:
-    -
-      plugin: get
-      source: field_featured_status
   field_documents:
     -
       plugin: media_migration_delta_sort
@@ -119,7 +119,7 @@ process:
 destination:
   plugin: 'entity:node'
   translations: true
-  default_bundle: page
+  default_bundle: pastor_article
 migration_dependencies:
   required:
     - upgrade_d7_user
@@ -138,5 +138,5 @@ migration_dependencies:
     - upgrade_d7_field_instance
     - upgrade_d7_comment_field_instance
     - upgrade_d7_metatag_field_node
-    - upgrade_d7_metatag_field_instance_node_page
-    - upgrade_d7_metatag_field_instance_widget_settings_node_page
+    - upgrade_d7_metatag_field_instance_node_pastor_article
+    - upgrade_d7_metatag_field_instance_widget_settings_node_pastor_article

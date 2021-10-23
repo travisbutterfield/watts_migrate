@@ -17,7 +17,9 @@
  *
  * After running, remove any yaml files that were brought into the custom
  * module that you don't want to migrate. Then, either enable the module, if
- * you haven't already, or import the configs using --partial and --source.
+ * you haven't already, or import the configs with the following:
+ *   "drush config:import --partial --source=/var/www/html/web/modules/custom/
+ *    watts_migrate/config/install/"
  */
 
 $root = strstr(__DIR__,'web', true);

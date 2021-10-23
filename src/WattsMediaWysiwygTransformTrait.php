@@ -25,31 +25,9 @@ trait WattsMediaWysiwygTransformTrait {
   public function transformWysiwyg($wysiwyg_content, EntityTypeManagerInterface $entityTypeManager) {
     $view_mode = NULL;
 
-    $wysiwyg_content_is_array = is_array($wysiwyg_content);
-    $text = (string) ($wysiwyg_content_is_array ? $wysiwyg_content['value'] : $wysiwyg_content);
-
-    if ($wysiwyg_content_is_array) {
-      $wysiwyg_content['value'] = $text;
-    }
-    else {
-      $value = $text;
-    }
-    $caption = '/\[caption.+?\="(?<caption>.+?)"\]/s';
-    preg_match($caption, $text, $mymatches);
-    if (count($mymatches) > 0) {
-      $pattern = '/\[caption.+?\="(?<caption>.+?)"\](?<media_element><div.+?class=".*?media-element.*?".*?>)\[\[(?<tag_info>.+?"type":"media".+?)\]\]<\/div>\[\/caption\]/s';
-    }
-    else {
-      $pattern = '/(?<media_element><div.+?class=".*?media-element.*?".*?>)\[\[(?<tag_info>.+?"type":"media".+?)\]\]<\/div>/s';
-    }
-
+    $pattern = '/\[\[(?<tag_info>.+?"type":"media".+?)\]\]/s';
     $media_embed_replacement_template = <<<'TEMPLATE'
-<drupal-media
-  alt="%s"
-  data-caption="%s"
-  data-entity-type="media"
-  data-entity-uuid="%s"
-  data-view-mode="%s"></drupal-media>
+<drupal-media alt="%s" data-entity-type="media" data-entity-uuid="%s" data-view-mode="%s"></drupal-media>
 TEMPLATE;
 
     $wysiwyg_content = preg_replace_callback($pattern, function ($matches) use ($media_embed_replacement_template, $entityTypeManager) {
@@ -60,12 +38,11 @@ TEMPLATE;
         $view_mode = $tag_info['view_mode'];
         $media_entity_uuid = $entityTypeManager->getStorage('media')
           ->load($tag_info['fid']);
-
         $media_entity_uuid = $media_entity_uuid ? $media_entity_uuid->uuid() : 0;
 
-          return sprintf($media_embed_replacement_template,
+
+        return sprintf($media_embed_replacement_template,
           $tag_info['fields']['field_file_image_alt_text[und][0][value]'] ?? '',
-          $matches['caption'] ?? '',
           $media_entity_uuid,
           $view_mode
         );
@@ -74,6 +51,12 @@ TEMPLATE;
         \Drupal::logger('watts_migrate')->notice('Caught exception: ' . $e->getMessage() . ' while trying to process this json: ' . $matches['tag_info']);
       }
     }, $wysiwyg_content);
+
+    // Replace captions with D9 media captions
+    $captregex = '/\[caption.+?(caption="(?<caption>.+?)"|(.*?))\](.*?)(?<pre><drupal-media.*?)(?<post>><\/drupal-media>)(?<end>.*?\[\/caption\])/s';
+    $wysiwyg_content = preg_replace_callback($captregex,function($matches) {
+      return $matches['pre'] . ' data-caption="' . $matches['caption'] . '"' . $matches['post'];
+    },$wysiwyg_content);
 
     return $wysiwyg_content;
   }
