@@ -13,7 +13,6 @@ use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\redirect\RedirectRepository;
 use Drupal\watts_migrate\WattsMediaWysiwygTransformTrait;
 use Drupal\watts_migrate\WattsWysiwygTextProcessingTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -255,7 +254,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'view_mode' => 'full',
             'block_serialized' => serialize($block),
             'context_mapping' => [],
-          ],[
+          ], [
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
@@ -274,16 +273,16 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'class' => '',
                 'style' => '',
                 'data' => '',
-              ]
-            ]
+              ],
+            ],
           ]);
         }
         if ($paneconfig['bundle'] === 'hero') {
           $link = $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_url;
           $sizes = ['380' => 'md', '700' => 'lg'];
-          $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? null;
+          $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? NULL;
           $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
+          $striptext = preg_replace('/<.*?>|<\/.*?>/', '', $text);
           $create_arr = [
             'reusable' => 0,
             'info' => 'Hero',
@@ -298,15 +297,15 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             $linktest = substr($link, 0, 4);
             $cta = Paragraph::create(['type' => 'cta']);
             $cta->set('field_cta_link', [
-                'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
-                'title' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_title,
-                'options' => [
-                  'attributes' => [
-                    'target' => '_self',
-                    'class' => 'btn-default btn-gold btn',
-                  ],
+              'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
+              'title' => $paneconfig['hero_fpp']->field_webspark_hero_primarybtn_title,
+              'options' => [
+                'attributes' => [
+                  'target' => '_self',
+                  'class' => 'btn-default btn-gold btn',
                 ],
-              ]
+              ],
+            ]
             );
             $cta->isNew();
             $cta->save();
@@ -332,7 +331,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
-          ],[
+          ], [
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
@@ -351,15 +350,15 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'class' => '',
                 'style' => '',
                 'data' => '',
-              ]
-            ]
+              ],
+            ],
           ]);
         }
         // Migrate first slide of ASU Spotlight as a Hero.
         if ($paneconfig['bundle'] === 'asu_spotlight') {
           $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
           $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/','',$text);
+          $striptext = preg_replace('/<.*?>|<\/.*?>/', '', $text);
           $create_arr = [
             'reusable' => 0,
             'info' => 'Hero',
@@ -374,15 +373,15 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             $linktest = substr($link, 0, 4);
             $cta = Paragraph::create(['type' => 'cta']);
             $cta->set('field_cta_link', [
-                'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
-                'title' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actiontitle,
-                'options' => [
-                  'attributes' => [
-                    'target' => '_self',
-                    'class' => 'btn-default btn-gold btn',
-                  ],
+              'uri' => $linktest === 'http' ? $link : 'internal:/' . $link,
+              'title' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actiontitle,
+              'options' => [
+                'attributes' => [
+                  'target' => '_self',
+                  'class' => 'btn-default btn-gold btn',
                 ],
-              ]
+              ],
+            ]
             );
             $cta->isNew();
             $cta->save();
@@ -407,7 +406,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
-          ],[
+          ], [
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
@@ -426,8 +425,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'class' => '',
                 'style' => '',
                 'data' => '',
-              ]
-            ]
+              ],
+            ],
           ]);
         }
         // Migrate ASU Title Banners as small Heroes.
@@ -453,7 +452,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
             'reusable' => 0,
             'block_serialized' => serialize($block),
             'context_mapping' => [],
-          ],[
+          ], [
             'component_attributes' => [
               'block_attributes' => [
                 'id' => $paneconfig['css']['css_id'],
@@ -472,8 +471,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'class' => '',
                 'style' => '',
                 'data' => '',
-              ]
-            ]
+              ],
+            ],
           ]);
         }
         break;
@@ -499,7 +498,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
-            ],[
+            ], [
               'component_attributes' => [
                 'block_attributes' => [
                   'id' => $paneconfig['css']['css_id'],
@@ -518,8 +517,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                   'class' => '',
                   'style' => '',
                   'data' => '',
-                ]
-              ]
+                ],
+              ],
             ]);
           }
         }
@@ -545,7 +544,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
-            ],[
+            ], [
               'component_attributes' => [
                 'block_attributes' => [
                   'id' => $paneconfig['css']['css_id'],
@@ -564,8 +563,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                   'class' => '',
                   'style' => '',
                   'data' => '',
-                ]
-              ]
+                ],
+              ],
             ]);
           }
           unset($exists);
@@ -593,7 +592,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
-            ],[
+            ], [
               'component_attributes' => [
                 'block_attributes' => [
                   'id' => $paneconfig['css']['css_id'],
@@ -612,8 +611,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                   'class' => '',
                   'style' => '',
                   'data' => '',
-                ]
-              ]
+                ],
+              ],
             ]);
           }
           unset($exists);
@@ -632,7 +631,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           'depth' => $paneconfig['origconfig']['depth'],
           'expand_all_items' => $paneconfig['origconfig']['expanded'],
           'context_mapping' => [],
-        ],[
+        ], [
           'component_attributes' => [
             'block_attributes' => [
               'id' => $paneconfig['css']['css_id'],
@@ -651,8 +650,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
               'class' => '',
               'style' => '',
               'data' => '',
-            ]
-          ]
+            ],
+          ],
         ]);
         break;
 
@@ -679,7 +678,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                 'entity' => 'layout_builder.entity',
                 'view_mode' => 'view_mode',
               ],
-            ],[
+            ], [
               'component_attributes' => [
                 'block_attributes' => [
                   'id' => $paneconfig['css']['css_id'],
@@ -698,8 +697,8 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
                   'class' => '',
                   'style' => '',
                   'data' => '',
-                ]
-              ]
+                ],
+              ],
             ]);
           }
         }

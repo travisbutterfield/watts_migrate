@@ -25,13 +25,12 @@ class QueryService {
     $qd9->condition('nlbl.entity_id', $testnid)
       ->fields('nlbl', ['layout_builder__layout_section']);
     $myresult = $qd9->execute()->fetchAll();
-    foreach($myresult as $poop) {
+    foreach ($myresult as $poop) {
       $test = unserialize($poop->layout_builder__layout_section);
       dump($test);
     }
 
     echo "D9 Layout Builder Layout Section data for Node {$testnid}.";
-
 
     echo "<hr><p>Panelizer data from the D7 database:</p>";
 

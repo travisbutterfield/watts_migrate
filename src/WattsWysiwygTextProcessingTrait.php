@@ -26,6 +26,8 @@ trait WattsWysiwygTextProcessingTrait {
 
     $matches = [];
 
+    $wysiwyg_content = is_array($wysiwyg_content) ? $wysiwyg_content['value'] : $wysiwyg_content;
+
     if (preg_match_all($pattern, $wysiwyg_content, $matches) > 0) {
       // Add a temp wrapper around the wysiwyg content.
       $wysiwyg_content = '<?xml encoding="UTF-8"><tempwrapper>' . $wysiwyg_content . '</tempwrapper>';

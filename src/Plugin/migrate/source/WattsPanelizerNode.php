@@ -104,7 +104,7 @@ class WattsPanelizerNode extends Node {
     $query->condition('pe.did', 0, '<>');
     // Sometimes it is easiest to test just one node.
     // Uncomment the next line and adjust for the desired nid.
-    //$query->condition('n.nid', 11594);
+    // $query->condition('n.nid', 4738);.
     return $query;
   }
 

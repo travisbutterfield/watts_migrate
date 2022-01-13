@@ -23,8 +23,6 @@ trait WattsMediaWysiwygTransformTrait {
    *   The original wysiwyg_content with embedded media in D8 format.
    */
   public function transformWysiwyg($wysiwyg_content, EntityTypeManagerInterface $entityTypeManager) {
-    $view_mode = NULL;
-
     $pattern = '/\[\[(?<tag_info>.+?"type":"media".+?)\]\]/s';
     $media_embed_replacement_template = <<<'TEMPLATE'
 <drupal-media alt="%s" data-entity-type="media" data-entity-uuid="%s" data-view-mode="%s"></drupal-media>
@@ -40,7 +38,6 @@ TEMPLATE;
           ->load($tag_info['fid']);
         $media_entity_uuid = $media_entity_uuid ? $media_entity_uuid->uuid() : 0;
 
-
         return sprintf($media_embed_replacement_template,
           $tag_info['fields']['field_file_image_alt_text[und][0][value]'] ?? '',
           $media_entity_uuid,
@@ -52,11 +49,11 @@ TEMPLATE;
       }
     }, $wysiwyg_content);
 
-    // Replace captions with D9 media captions
+    // Replace captions with D9 media captions.
     $captregex = '/\[caption.+?(caption="(?<caption>.+?)"|(.*?))\](.*?)(?<pre><drupal-media.*?)(?<post>><\/drupal-media>)(?<end>.*?\[\/caption\])/s';
-    $wysiwyg_content = preg_replace_callback($captregex,function($matches) {
+    $wysiwyg_content = preg_replace_callback($captregex, function ($matches) {
       return $matches['pre'] . ' data-caption="' . $matches['caption'] . '"' . $matches['post'];
-    },$wysiwyg_content);
+    }, $wysiwyg_content);
 
     return $wysiwyg_content;
   }
