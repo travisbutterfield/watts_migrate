@@ -110,35 +110,38 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
   /**
    * {@inheritdoc}
    */
-  public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
-    $layout = $row->getSourceProperty('layout');
-    $layout = $layout === 'beast' ? 'radix_beast' : $layout;
-    $layout = $layout === 'beast2' ? 'radix_beast' : $layout;
-    $rowconfig = [];
-    $rowconfig['layout'] = $layout;
-    $rowconfig['nid'] = $row->getSourceProperty('nid');
-    $rowconfig['value'] = $row->getSourceProperty('panes');
-    $rowconfig['nodetype'] = $row->getSourceProperty('type');
+  public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property)
+  {
+      $layout = $row->getSourceProperty('layout');
+      $layout = $layout === 'beast' ? 'radix_beast' : $layout;
+      $layout = $layout === 'beast2' ? 'radix_beast' : $layout;
+      $rowconfig = [];
+      $rowconfig['layout'] = $layout;
+      $rowconfig['nid'] = $row->getSourceProperty('nid');
+      $rowconfig['value'] = $row->getSourceProperty('panes');
+      $rowconfig['nodetype'] = $row->getSourceProperty('type');
 
-    $lbload = LayoutBuilderEntityViewDisplay::load(
-      "node.{$rowconfig['nodetype']}.default");
-    $lbtest = $lbload->isLayoutBuilderEnabled();
-    if (!$lbtest) {
-      try {
-        $lbload->enableLayoutBuilder()
-          ->setOverridable()
-          ->save();
-        $format = 'Notice: Layout Builder has been enabled on the %s content type. Now continuing with migration...';
-        $print = sprintf($format, $rowconfig['nodetype']);
-        \Drupal::logger('watts_migrate')->notice($print);
+      $lbload = LayoutBuilderEntityViewDisplay::load(
+          "node.{$rowconfig['nodetype']}.default");
+      $loadtest = isset($lbload) ? $lbload : false;
+      if ($loadtest) {
+          $lbtest = $lbload->isLayoutBuilderEnabled();
+          if (!$lbtest) {
+              try {
+                  $lbload->enableLayoutBuilder()
+                      ->setOverridable()
+                      ->save();
+                  $format = 'Notice: Layout Builder has been enabled on the %s content type. Now continuing with migration...';
+                  $print = sprintf($format, $rowconfig['nodetype']);
+                  \Drupal::logger('watts_migrate')->notice($print);
+              } catch (EntityStorageException $e) {
+                  $format = 'An error has occurred: Layout Builder has NOT been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
+                  $print = sprintf($format, $rowconfig['nodetype']);
+                  \Drupal::logger('watts_migrate')->error($print);
+                  exit;
+              }
+          }
       }
-      catch (EntityStorageException $e) {
-        $format = 'An error has occurred: Layout Builder has NOT been enabled on the %s content type. Exiting migration. Please enable Layout Builder and try again.';
-        $print = sprintf($format, $rowconfig['nodetype']);
-        \Drupal::logger('watts_migrate')->error($print);
-        exit;
-      }
-    }
     // Create blocks from each pane and wrap them in
     // SectionComponents to be assigned to the overall Section.
     $hero_section = new Section('layout_onecol');
@@ -282,12 +285,13 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
           $sizes = ['380' => 'md', '700' => 'lg'];
           $herosize = $sizes[$paneconfig['hero_fpp']->field_webspark_hero_height_value] ?? NULL;
           $text = $paneconfig['hero_fpp']->field_webspark_hero_blurb_value;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/', '', $text);
+          $striptext = preg_replace('/<.*?>|<\/.*?>/', ' ', $text);
+          $striptitle = preg_replace('/<.*?>|<\/.*?>/', ' ', $paneconfig['hero_fpp']->title);
           $create_arr = [
             'reusable' => 0,
             'info' => 'Hero',
             'type' => $paneconfig['bundle'],
-            'field_heading' => $paneconfig['hero_fpp']->title,
+            'field_heading' => $striptitle,
             'field_hero_background_color' => 'gold',
             'field_hero_size' => $herosize,
             'field_hero_unformatted_text' => $striptext,
@@ -358,12 +362,14 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         if ($paneconfig['bundle'] === 'asu_spotlight') {
           $link = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_actionlink;
           $text = $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_description;
-          $striptext = preg_replace('/<.*?>|<\/.*?>/', '', $text);
+          $striptext = preg_replace('/<.*?>|<\/.*?>/', ' ', $text);
+          $striptitle = preg_replace('/<.*?>|<\/.*?>/', ' ',
+              $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title);
           $create_arr = [
             'reusable' => 0,
             'info' => 'Hero',
             'type' => 'hero',
-            'field_heading' => $paneconfig['asu_spotlight_fpp']->field_asu_spotlight_items_title,
+            'field_heading' => $striptitle,
             'field_hero_background_color' => 'gold',
             'field_hero_size' => 'lg',
             'field_hero_unformatted_text' => $striptext,
@@ -431,12 +437,13 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         }
         // Migrate ASU Title Banners as small Heroes.
         if ($paneconfig['bundle'] === 'banner') {
-          $block = $this->entityTypeManager->getStorage('block_content')
+            $striptitle = preg_replace('/<.*?>|<\/.*?>/', ' ', $paneconfig['banner_fpp']->title);
+            $block = $this->entityTypeManager->getStorage('block_content')
             ->create([
               'reusable' => 0,
               'info' => 'Banner hero (migrated)',
               'type' => 'hero',
-              'field_heading' => $paneconfig['banner_fpp']->title,
+              'field_heading' => $striptitle,
               'field_hero_background_color' => 'gold',
               'field_hero_size' => 'sm',
               'field_media' => $paneconfig['banner_fpp']->field_banner_image_fid,
@@ -656,7 +663,7 @@ class WattsPanesToLbSection extends ProcessPluginBase implements ContainerFactor
         break;
 
       case 'node_title':
-        if ($paneconfig['subtype'] === 'node_title') {
+          if ($paneconfig['subtype'] === 'node_title') {
           $node = $this->entityTypeManager->getStorage('node')->load($rowconfig['nid']);
           // Returns false if the field doesn't exist.
           $exists = !empty($node->title);
