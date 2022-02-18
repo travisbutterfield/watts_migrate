@@ -184,7 +184,7 @@ trait GetFppDataTrait {
       $row->setSourceProperty('panes/' . $i . '/text_fpp', $result);
 
     }
-    // Access the contents of the 'hero and jumbohero' fpps.
+    // Access the contents of the 'hero' fpps.
     if ($bundle === "hero") {
       $heroquery = $this->d7Connection->select('fieldable_panels_panes', 'fpp');
       $heroquery->leftJoin('field_data_field_webspark_hero_bgimg', 'hbi', 'hbi.entity_id = fpp.fpid');
@@ -193,9 +193,6 @@ trait GetFppDataTrait {
       $heroquery->leftJoin('field_data_field_webspark_hero_height', 'hht', 'hht.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_hero_primarybtn', 'hpb', 'hpb.entity_id = fpp.fpid');
       $heroquery->leftJoin('field_data_field_webspark_hero_ugradbtn', 'hub', 'hub.entity_id = fpp.fpid');
-      $heroquery->leftJoin('field_data_field_webspark_jumbohero_bgimg', 'jhbi', 'jhbi.entity_id = fpp.fpid');
-      $heroquery->leftJoin('field_data_field_webspark_jumbohero_blurb', 'jhbl', 'jhbl.entity_id = fpp.fpid');
-      $heroquery->leftJoin('field_data_field_webspark_jumbo_position', 'jhp', 'jhp.entity_id = fpp.fpid');
       $heroquery->fields('fpp',
         ['title', 'link', 'path', 'reusable', 'admin_title']
       )
@@ -220,14 +217,6 @@ trait GetFppDataTrait {
             'field_webspark_hero_ugradbtn_title',
           ]
         )
-        ->fields('jhbi', ['field_webspark_jumbohero_bgimg_fid'])
-        ->fields('jhbl',
-          [
-            'field_webspark_jumbohero_blurb_value',
-            'field_webspark_jumbohero_blurb_format',
-          ]
-        )
-        ->fields('jhp', ['field_webspark_jumbo_position_value'])
         ->condition('hbi.entity_id', $fpid);
       $result = $heroquery->execute()->fetchAll();
 

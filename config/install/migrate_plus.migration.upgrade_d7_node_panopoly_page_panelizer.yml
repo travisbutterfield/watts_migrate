@@ -11,6 +11,7 @@ cck_plugin_method: null
 migration_tags:
   - 'Drupal 7'
   - Content
+  - Panelizer
 migration_group: migrate_drupal_7
 label: 'Panelizer Nodes FPP Text (Content Page)'
 source:

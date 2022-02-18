@@ -1,0 +1,21 @@
+uuid: ebb7df88-ade5-425f-8418-51db5c88fefc
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+_core:
+  default_config_hash: PwHijPIQ1KW7KrMXy_TzSdLjozhXG7INtrEZ3dLRVVM
+name: 'Full HTML'
+format: full_html
+weight: 0
+filters:
+  media_embed:
+    id: media_embed
+    provider: media
+    status: true
+    weight: 2
+    settings:
+      default_view_mode: default
+      allowed_view_modes: {  }
+      allowed_media_types: {  }

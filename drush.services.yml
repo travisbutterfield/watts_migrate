@@ -1,0 +1,7 @@
+services:
+  update.commands:
+    class: \Drupal\watts_migrate\Commands\UpdateCommands
+    arguments:
+      - '@keyvalue'
+    tags:
+      - { name: drush.command }

@@ -1,0 +1,43 @@
+uuid: 5d940822-393e-4c96-b892-601a71c4900e
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.minimal_format
+  module:
+    - ckeditor
+_core:
+  default_config_hash: KkJZnROzM2fQuKTSVi-n5GzQizvMKVku7LPDJeVDwRQ
+format: minimal_format
+editor: ckeditor
+settings:
+  toolbar:
+    rows:
+      -
+        -
+          name: Formatting
+          items:
+            - Format
+            - Bold
+            - Italic
+        -
+          name: Links
+          items:
+            - DrupalLink
+            - DrupalUnlink
+  plugins:
+    drupallink:
+      linkit_enabled: false
+      linkit_profile: ''
+    stylescombo:
+      styles: ''
+    language:
+      language_list: un
+image_upload:
+  status: false
+  scheme: public
+  directory: inline-images
+  max_size: ''
+  max_dimensions:
+    width: null
+    height: null
